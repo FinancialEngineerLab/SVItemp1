@@ -1,0 +1,19 @@
+﻿Build started 2015/3/16 14:11:16.
+     1>Project "D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\xll.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "v100\Debug\xll.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         All outputs are up-to-date.
+       Lib:
+         All outputs are up-to-date.
+         xll.vcxproj -> D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\v100\Debug\xll.xll
+       BscMake:
+         All outputs are up-to-date.
+       FinalizeBuildStatus:
+         Deleting file "v100\Debug\xll.unsuccessfulbuild".
+         Touching "v100\Debug\xll.lastbuildstate".
+     1>Done Building Project "D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\xll.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.03

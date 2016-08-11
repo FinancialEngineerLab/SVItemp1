@@ -1,0 +1,25 @@
+﻿Build started 2015/3/16 14:11:01.
+     1>Project "D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\option\option.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Touching "Debug\option.unsuccessfulbuild".
+       ClCompile:
+         All outputs are up-to-date.
+       Link:
+         e:\Software\VS10\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\Debug\Aladdin.xll" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\Aladdin.xll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\Debug\Aladdin.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\Debug\Aladdin.lib" /MACHINE:X86 /DLL Debug\GeneralUtility.obj
+         Debug\MathCalc.obj
+         Debug\montecarlo.obj
+         Debug\params.obj
+         Debug\xlOptionMain.obj
+         D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\v100\Debug\xll.xll
+            Creating library D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\Debug\Aladdin.lib and object D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\Debug\Aladdin.exp
+         option.vcxproj -> D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\Debug\Aladdin.xll
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\Debug\Aladdin.xll.manifest" /manifest Debug\Aladdin.xll.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file "Debug\option.unsuccessfulbuild".
+         Touching "Debug\option.lastbuildstate".
+     1>Done Building Project "D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\option\option.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.00

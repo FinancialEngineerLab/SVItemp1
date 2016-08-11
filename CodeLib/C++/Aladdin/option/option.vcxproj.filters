@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\MathFuncs">
+      <UniqueIdentifier>{8413caf8-88d5-498f-93ab-330e446aa7a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Option">
+      <UniqueIdentifier>{5a824c0c-7a27-4b29-b616-49f88d38e1d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utility">
+      <UniqueIdentifier>{b6c1e802-6289-44a8-b618-5010f480121c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utility">
+      <UniqueIdentifier>{e0ae6c63-4abe-4056-b687-6a7dd5702787}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Strat">
+      <UniqueIdentifier>{91fd59a5-72a5-46aa-8865-4186b19a109a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MathFuncs">
+      <UniqueIdentifier>{51af1e64-92df-4663-89e2-a0d8e518b6b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Option">
+      <UniqueIdentifier>{2add42c0-f65f-458c-a251-e8eac1e2dfad}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="xlOptionMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneralUtility.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="MathCalc.cpp">
+      <Filter>Source Files\MathFuncs</Filter>
+    </ClCompile>
+    <ClCompile Include="montecarlo.cpp">
+      <Filter>Source Files\Option</Filter>
+    </ClCompile>
+    <ClCompile Include="params.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="black.cpp">
+      <Filter>Source Files\Option</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="normal.h">
+      <Filter>Header Files\MathFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="ooura.h">
+      <Filter>Header Files\MathFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="black.h">
+      <Filter>Header Files\Option</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneralUtility.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MathCalc.h">
+      <Filter>Header Files\MathFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="montecarlo.h">
+      <Filter>Header Files\Option</Filter>
+    </ClInclude>
+    <ClInclude Include="params.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,28 @@
+﻿Build started 2015/3/16 14:50:53.
+     1>Project "D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\option\option.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Release\option.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         e:\Software\VS10\VC\bin\CL.exe /c /I..\.. /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _USRDLL /D OPTION_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt xlOptionMain.cpp
+         xlOptionMain.cpp
+       Link:
+         e:\Software\VS10\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\Release\Aladdin.xll" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Release\Aladdin.xll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\Release\Aladdin.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\Release\Aladdin.lib" /MACHINE:X86 /DLL Release\GeneralUtility.obj
+         Release\MathCalc.obj
+         Release\montecarlo.obj
+         Release\params.obj
+         Release\xlOptionMain.obj
+         D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\v100\Release\xll.lib
+            Creating library D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\Release\Aladdin.lib and object D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\Release\Aladdin.exp
+         Generating code
+         Finished generating code
+         option.vcxproj -> D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\Release\Aladdin.xll
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\build\Release\Aladdin.xll;#2" /manifest Release\Aladdin.xll.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file "Release\option.unsuccessfulbuild".
+         Touching "Release\option.lastbuildstate".
+     1>Done Building Project "D:\Workarea\Beiwaitan\CodeLib\C++\Aladdin\option\option.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.45
