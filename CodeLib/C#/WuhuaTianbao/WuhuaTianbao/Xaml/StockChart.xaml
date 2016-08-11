@@ -1,0 +1,250 @@
+﻿<Window x:Class="WuhuaTianbao.StockChart"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="行业超额收益" 
+        xmlns:ams="http://schemas.amcharts.com/stock/wpf/2009/xaml" 
+        Loaded="Window_Loaded" 
+        mc:Ignorable="d" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        SizeToContent="WidthAndHeight" 
+        MinWidth="900">
+    <Grid Margin="10,0,10,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="120" />
+            <RowDefinition Height="180" />
+            <RowDefinition Height="600" />
+            <RowDefinition Height="4*" />
+        </Grid.RowDefinitions>
+        <Rectangle Grid.Row="1" HorizontalAlignment="Stretch" Margin="6" Name="rectangle1" Stroke="Black" VerticalAlignment="Stretch" />
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Label Content="Label" Name="label1" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" FontSize="18" />
+        </StackPanel>
+
+        <ams:StockChart Name="stockChart" Grid.Row="3" Margin="0,6,0,-6">
+            <ams:StockChart.DataSets>
+                <ams:DataSet Name="stockSet1" Brush="DarkOrange"
+                                ItemsSource = "{Binding Data}"
+                                DateMemberPath="date"
+                                OpenMemberPath="open" HighMemberPath="high"
+                                LowMemberPath="low" CloseMemberPath="close"
+                                ValueMemberPath="close2" VolumeMemberPath="volume"
+                                />
+            </ams:StockChart.DataSets>
+
+            <ams:StockChart.Charts>
+                <!--该部分后期隐藏，以不显示Logo-->
+                <ams:Chart Title="股票价格" GridHeight="4*">
+                    <ams:Chart.Graphs>
+                        <ams:Graph GraphType="Line"  DataField="Value"/>
+                    </ams:Chart.Graphs>
+                </ams:Chart>
+                <!--K线图-->
+                <ams:Chart Title="股票价格" GridHeight="4*">
+                    <ams:Chart.Graphs>
+                        <ams:Graph GraphType="Candlestick" 
+                                    NegativeBrush="Green" PositiveBrush="Red" 
+                                    LegendItemType="Ohlc" LegendPeriodItemType="Ohlc"
+                                    CursorBrush="Blue" CursorSize="6" 
+                                    />
+                        <ams:Graph GraphType="Line"  DataField="Value" Brush="DarkOrange" BulletSize="5" 
+                                     LineThickness="2" BulletType="Round"/>
+                    </ams:Chart.Graphs>
+
+                    <ams:Chart.DateTimeAxis>
+                        <ams:DateTimeAxis ValuesForeground="#90000000" StrokeThickness="0" TickLength="0" 
+                                            />
+                    </ams:Chart.DateTimeAxis>
+
+                    <ams:Chart.LeftValueAxis>
+                        <ams:ValueAxis ValuesForeground="#90000000"
+                                StrokeThickness="0" TickLength="0" />
+                    </ams:Chart.LeftValueAxis>
+
+                    <ams:Chart.Legend>
+                        <ams:Legend
+                            PositiveValueForeground="Red" NegativeValueForeground="Green"
+                            IsDateVisible="True"/>
+                    </ams:Chart.Legend>
+                </ams:Chart>
+
+                <!--成交量的Chart-->
+                <ams:Chart Title="成交量">
+                    <ams:Chart.Graphs>
+                        <ams:Graph GraphType="Column" 
+                                    LegendItemType="Value" LegendPeriodItemType="Value"
+                                    DataField="Volume" PeriodValue="Sum"
+                                    CursorBrush="SaddleBrown" CursorSize="6"
+                                    Brush="DarkOrange"
+                                    />
+                    </ams:Chart.Graphs>
+
+                    <ams:Chart.DateTimeAxis>
+                        <ams:DateTimeAxis ValuesEnabled="False" StrokeThickness="0" />
+                    </ams:Chart.DateTimeAxis>
+
+                    <ams:Chart.LeftValueAxis>
+                        <ams:ValueAxis ValuesForeground="#90000000"
+                                StrokeThickness="0" TickLength="0"
+                                />
+                    </ams:Chart.LeftValueAxis>
+
+                    <ams:Chart.Legend>
+                        <ams:Legend PositiveValueForeground="Red" NegativeValueForeground="Green" />
+                    </ams:Chart.Legend>
+                </ams:Chart>
+            </ams:StockChart.Charts>
+
+            <!--区间选择的Chart-->
+            <ams:StockChart.PeriodSelector>
+                <ams:PeriodSelector CustomPeriodLabelText="自定义间隔:" PresetPeriodLabelText="缩放:" 
+                                Margin="0,5,0,0"  Foreground="DarkOrange" Background="DarkOrange" BorderBrush="DarkOrange" 
+                                    BorderThickness="10"
+                                    >
+                    <ams:PeriodSelector.PresetPeriods>
+                        <ams:PresetPeriodButton Interval="Day" Quantity="5" ToolTipService.ToolTip="5天" Content="5天" />
+                        <ams:PresetPeriodButton Interval="Day" Quantity="10" ToolTipService.ToolTip="10天" Content="10天" />
+                        <ams:PresetPeriodButton Interval="Day" Quantity="20" ToolTipService.ToolTip="20天" Content="20天" />
+                        <ams:PresetPeriodButton Interval="Month" Quantity="1" ToolTipService.ToolTip="1月" Content="1月" />
+                        <ams:PresetPeriodButton Interval="Month" Quantity="3" ToolTipService.ToolTip="3月" Content="3月" />
+                        <ams:PresetPeriodButton Interval="Month" Quantity="6" ToolTipService.ToolTip="6年" Content="6月" />
+                        <ams:PresetPeriodButton Quantity="NaN" ToolTipService.ToolTip="所有数据" Content="最大" />
+                    </ams:PeriodSelector.PresetPeriods>
+                </ams:PeriodSelector>
+            </ams:StockChart.PeriodSelector>
+        </ams:StockChart>
+        <Grid Name="grid2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="100*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20*" />
+                <RowDefinition Height="30*" />
+                <RowDefinition Height="30*" />
+            </Grid.RowDefinitions>
+            <Label Content="时间长度" Height="28" HorizontalAlignment="Center" Name="label16" VerticalAlignment="Center" />
+            <Label Content="超额收益" Height="28" HorizontalAlignment="Center" Name="label17" VerticalAlignment="Center" Grid.Row="1" />
+            <Label Content="分位数" Height="28" HorizontalAlignment="Center" Name="label18" VerticalAlignment="Center" Grid.Row="2" />
+            <Label Content="1日" Grid.Column="1" Height="28" HorizontalAlignment="Center" Name="label19" VerticalAlignment="Center" />
+            <Label Content="5日" Grid.Column="2" Height="28" HorizontalAlignment="Center" Name="label20" VerticalAlignment="Center" />
+            <Label Content="10日" Grid.Column="3" Height="28" HorizontalAlignment="Center" Name="label21" VerticalAlignment="Center" />
+            <Label Content="60日" Grid.Column="4" Height="28" HorizontalAlignment="Center" Name="label22" VerticalAlignment="Center" />
+            <Label Content="120日" Grid.Column="5" Height="28" HorizontalAlignment="Center" Name="label23" VerticalAlignment="Center" />
+            <Label Content="250日" Grid.Column="6" Height="28" HorizontalAlignment="Center" Name="label24" VerticalAlignment="Center" />
+            
+            <TextBox Grid.Column="1" Height="23" TextAlignment="Center" HorizontalAlignment="Center" Name="textBox16" VerticalAlignment="Center" Width="75" Grid.Row="1" MouseDoubleClick="textBox16_MouseDoubleClick" Background="AliceBlue"/>
+            <TextBox Grid.Column="1" Height="23" TextAlignment="Center" HorizontalAlignment="Center" Name="textBox17" VerticalAlignment="Center" Width="75" Grid.Row="2" MouseDoubleClick="textBox17_MouseDoubleClick" Background="AliceBlue"/>
+            <TextBox Grid.Column="2" Height="23" TextAlignment="Center" HorizontalAlignment="Center" Name="textBox18" VerticalAlignment="Center" Width="75" Grid.Row="1" MouseDoubleClick="textBox18_MouseDoubleClick" Background="AliceBlue"/>
+            <TextBox Grid.Column="2" Height="23" TextAlignment="Center" HorizontalAlignment="Center" Name="textBox19" VerticalAlignment="Center" Width="75" Grid.Row="2" MouseDoubleClick="textBox19_MouseDoubleClick" Background="AliceBlue"/>
+            <TextBox Grid.Column="3" Height="23" TextAlignment="Center" HorizontalAlignment="Center" Name="textBox20" VerticalAlignment="Center" Width="75" Grid.Row="1" MouseDoubleClick="textBox20_MouseDoubleClick" Background="AliceBlue"/>
+            <TextBox Grid.Column="3" Height="23" TextAlignment="Center" HorizontalAlignment="Center" Name="textBox21" VerticalAlignment="Center" Width="75" Grid.Row="2" MouseDoubleClick="textBox21_MouseDoubleClick" Background="AliceBlue"/>
+            <TextBox Grid.Column="4" Height="23" TextAlignment="Center" HorizontalAlignment="Center" Name="textBox22" VerticalAlignment="Center" Width="75" Grid.Row="1" MouseDoubleClick="textBox22_MouseDoubleClick" Background="AliceBlue"/>
+            <TextBox Grid.Column="4" Height="23" TextAlignment="Center" HorizontalAlignment="Center" Name="textBox23" VerticalAlignment="Center" Width="75" Grid.Row="2" MouseDoubleClick="textBox23_MouseDoubleClick" Background="AliceBlue"/>
+            <TextBox Grid.Column="5" Height="23" TextAlignment="Center" HorizontalAlignment="Center" Name="textBox24" VerticalAlignment="Center" Width="75" Grid.Row="1" MouseDoubleClick="textBox24_MouseDoubleClick" Background="AliceBlue"/>
+            <TextBox Grid.Column="5" Height="23" TextAlignment="Center" HorizontalAlignment="Center" Name="textBox25" VerticalAlignment="Center" Width="75" Grid.Row="2" MouseDoubleClick="textBox25_MouseDoubleClick" Background="AliceBlue"/>
+            <TextBox Grid.Column="6" Height="23" TextAlignment="Center" HorizontalAlignment="Center" Name="textBox26" VerticalAlignment="Center" Width="75" Grid.Row="1" MouseDoubleClick="textBox26_MouseDoubleClick" Background="AliceBlue"/>
+            <TextBox Grid.Column="6" Height="23" TextAlignment="Center" HorizontalAlignment="Center" Name="textBox27" VerticalAlignment="Center" Width="75" Grid.Row="2" MouseDoubleClick="textBox27_MouseDoubleClick" Background="AliceBlue"/>            
+        </Grid>
+        <Grid Grid.Row="2" HorizontalAlignment="Stretch" Margin="3" Name="grid3" VerticalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="100*"/>
+            </Grid.ColumnDefinitions>
+            <Rectangle Grid.Column="0" HorizontalAlignment="Stretch" Margin="2" Name="rectangle5" Stroke="Black" VerticalAlignment="Stretch" />
+            <Rectangle Grid.Column="1" HorizontalAlignment="Stretch" Margin="2" Name="rectangle6" Stroke="Black" VerticalAlignment="Stretch" />
+            <Rectangle Grid.Column="2" HorizontalAlignment="Stretch" Margin="2" Name="rectangle7" Stroke="Black" VerticalAlignment="Stretch" />
+            <Rectangle Grid.Column="3" HorizontalAlignment="Stretch" Margin="2" Name="rectangle8" Stroke="Black" VerticalAlignment="Stretch" />
+            
+            <Grid Grid.Column="0" HorizontalAlignment="Stretch" Margin="3,2" Name="grid4" VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100*"/>
+                    <ColumnDefinition Width="100*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30*" />
+                    <RowDefinition Height="30*" />
+                    <RowDefinition Height="30*" />
+                    <RowDefinition Height="30*" />
+                </Grid.RowDefinitions>
+                <Label Content="PE" Height="28" HorizontalAlignment="Center" Name="label2" VerticalAlignment="Center" />
+                <Label Content="PE分位数" Height="28" HorizontalAlignment="Center" Name="label6" VerticalAlignment="Center" Grid.Row="1"/>
+                <Label Content="相对PE" Height="28" HorizontalAlignment="Center" Name="label4" VerticalAlignment="Center" Grid.Row="2"/>
+                <Label Content="相对PE分位数" Height="28" HorizontalAlignment="Center" Name="label8" VerticalAlignment="Center" Grid.Row="3"/>
+                <TextBox Height="20" HorizontalAlignment="Center" Name="textBox1" VerticalAlignment="Center" Width="75" FontSize="12" TextAlignment="Center" Grid.Column="1" Background="AliceBlue" MouseDoubleClick="PEtextBox1_MouseDoubleClick" />
+                <TextBox Height="20" HorizontalAlignment="Center" Name="textBox5" VerticalAlignment="Center" Width="75" FontSize="12" TextAlignment="Center" Grid.Row="1" Grid.Column="1" Background="AliceBlue" MouseDoubleClick="QuantilePEtextBox5_MouseDoubleClick" />
+                <TextBox Height="20" HorizontalAlignment="Center" Name="textBox3" VerticalAlignment="Center" Width="75" FontSize="12" TextAlignment="Center" Grid.Column="1" Grid.Row="2" Background="AliceBlue" MouseDoubleClick="RelativePEtextBox3_MouseDoubleClick" />
+                <TextBox Height="20" HorizontalAlignment="Center" Name="textBox7" VerticalAlignment="Center" Width="75" FontSize="12" TextAlignment="Center" Grid.Column="1" Grid.Row="3" Background="AliceBlue" MouseDoubleClick="QuantileRelativePEtextBox7_MouseDoubleClick" />
+            </Grid>
+
+            <Grid Grid.Column="1" HorizontalAlignment="Stretch" Margin="3,2" Name="grid5" VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100*"/>
+                    <ColumnDefinition Width="100*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30*" />
+                    <RowDefinition Height="30*" />
+                    <RowDefinition Height="30*" />
+                    <RowDefinition Height="30*" />
+                </Grid.RowDefinitions>
+                <Label Content="PB" Height="28" HorizontalAlignment="Center" Name="label3" VerticalAlignment="Center" />
+                <Label Content="PB分位数" Height="28" HorizontalAlignment="Center" Name="label7" VerticalAlignment="Center" Grid.Row="1" />
+                <Label Content="相对PB" Height="28" HorizontalAlignment="Center" Name="label5" VerticalAlignment="Center" Grid.Row="2" />
+                <Label Content="相对PB分位数" Height="28" HorizontalAlignment="Center" Name="label9" VerticalAlignment="Center" Grid.Row="3"/>
+                <TextBox Height="20" HorizontalAlignment="Center" Name="textBox2" VerticalAlignment="Center" Width="75" FontSize="12" TextAlignment="Center" Grid.Row="0" Grid.Column="1" Background="AliceBlue" MouseDoubleClick="PBtextBox2_MouseDoubleClick" />
+                <TextBox Height="20" HorizontalAlignment="Center" Name="textBox6" VerticalAlignment="Center" Width="75" FontSize="12" TextAlignment="Center" Grid.Row="1" Grid.Column="1" Background="AliceBlue" MouseDoubleClick="QuantilePBtextBox6_MouseDoubleClick" />
+                <TextBox Height="20" HorizontalAlignment="Center" Name="textBox4" VerticalAlignment="Center" Width="75" FontSize="12" TextAlignment="Center" Grid.Row="2" Grid.Column="1" Background="AliceBlue" MouseDoubleClick="RelativePBtextBox4_MouseDoubleClick" />
+                <TextBox Height="20" HorizontalAlignment="Center" Name="textBox8" VerticalAlignment="Center" Width="75" FontSize="12" TextAlignment="Center" Grid.Row="3" Grid.Column="1" Background="AliceBlue" MouseDoubleClick="QuantileRelativePBtextBox8_MouseDoubleClick" />
+            </Grid>
+
+            <Grid Grid.Column="2" HorizontalAlignment="Stretch" Margin="3,2" Name="grid6" VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100*"/>
+                    <ColumnDefinition Width="100*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30*" />
+                    <RowDefinition Height="30*" />
+                    <RowDefinition Height="30*" />
+                    <RowDefinition Height="30*" />
+                </Grid.RowDefinitions>
+                <Label Content="周频换手率" Height="28" HorizontalAlignment="Center" Name="label12" VerticalAlignment="Center"/>
+                <Label Content="周频量比" Height="28" HorizontalAlignment="Center" Name="label13" VerticalAlignment="Center" Grid.Row="1"/>
+                <TextBox Height="20" HorizontalAlignment="Center" Name="textBox11" VerticalAlignment="Center" Width="75" FontSize="12" TextAlignment="Center" Grid.Column="1"/>
+                <TextBox Height="20" HorizontalAlignment="Center" Name="textBox12" VerticalAlignment="Center" Width="75" FontSize="12" TextAlignment="Center" Grid.Column="1" Grid.Row="1"/>
+                <Label Content="上周日均成交额(亿)" Height="28" HorizontalAlignment="Center" Name="label14" VerticalAlignment="Center" Grid.Row="2"/>
+                <Label Content="上周日均成交量(亿)" Height="28" HorizontalAlignment="Center" Name="label15" VerticalAlignment="Center" Grid.Row="3"/>
+                <TextBox Height="20" HorizontalAlignment="Center" Name="textBox13" VerticalAlignment="Center" Width="75" FontSize="12" TextAlignment="Center" Grid.Column="1" Grid.Row="2"/>
+                <TextBox Height="20" HorizontalAlignment="Center" Name="textBox14" VerticalAlignment="Center" Width="75" FontSize="12" TextAlignment="Center" Grid.Column="1" Grid.Row="3"/>
+            </Grid>
+
+
+            <Grid Grid.Column="3" HorizontalAlignment="Stretch" Margin="3,2" Name="grid7" VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100*"/>
+                    <ColumnDefinition Width="100*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30*" />
+                    <RowDefinition Height="30*" />
+                    <RowDefinition Height="30*" />
+                    <RowDefinition Height="30*" />
+                </Grid.RowDefinitions>
+                <Label Content="ROE" Height="28" HorizontalAlignment="Center" Name="label10" VerticalAlignment="Center"/>
+                <Label Content="净利同比" Height="28" HorizontalAlignment="Center" Name="label11" VerticalAlignment="Center" Grid.Row="1"/>
+                <TextBox Height="20" HorizontalAlignment="Center" Name="textBox9" VerticalAlignment="Center" Width="75" FontSize="12" TextAlignment="Center" Grid.Column="1"/>
+                <TextBox Height="20" HorizontalAlignment="Center" Name="textBox10" VerticalAlignment="Center" Width="75" FontSize="12" TextAlignment="Center" Grid.Column="1" Grid.Row="1"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

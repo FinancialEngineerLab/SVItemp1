@@ -1,0 +1,35 @@
+﻿<Window x:Class="WuhuaTianbao.ZZ800ExcessReturn"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:amq="clr-namespace:AmCharts.Windows.QuickCharts;assembly=AmCharts.Windows.QuickCharts"
+        Title="中证800行业中性指数超额收益"
+        SizeToContent="WidthAndHeight" 
+        mc:Ignorable="d" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        d:DesignHeight="796" 
+        d:DesignWidth="664">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="400*" />
+        </Grid.RowDefinitions>
+        <amq:SerialChart x:Name="ZZ800ExcessReturnChart" Grid.Row="0"
+                         DataSource="{Binding Data}" 
+                         CategoryValueMemberPath="name" 
+                         Background="White"
+                         BorderBrush="Black"
+                         BorderThickness="1"
+                         AxisForeground="Gray"
+                         ValueFormatString="0.00 %"   
+                         GridStroke="Transparent"
+                         Margin="0,0,0,0" Height="400" VerticalAlignment="Top" Width ="900" MaxWidth="1680" OverridesDefaultStyle="False" MinimumCategoryGridStep="20" MinimumValueGridStep="15">
+            <amq:SerialChart.Graphs>
+                <amq:ColumnGraph ValueMemberPath="pct_chg" 
+                                 Title="超额收益&#13; (小市值-大市值)" 
+                                 ColumnWidthAllocation="0.25"
+                                 Brush="Crimson"/>
+            </amq:SerialChart.Graphs>
+        </amq:SerialChart>
+        <TextBlock Grid.Row="1" Height="23" HorizontalAlignment="Center" Margin="105,16,0,0" Name="textBlock1" Text="中证800行业中性指数超额收益" VerticalAlignment="Top" FontWeight="Bold" FontSize="15" />
+    </Grid>
+</Window>

@@ -1,0 +1,79 @@
+﻿<Window x:Class="WuhuaTianbao.Xaml.IndexEvolution"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="数据历史趋势图" 
+        xmlns:ams="http://schemas.amcharts.com/stock/wpf/2009/xaml" 
+        Loaded="Window_Loaded" 
+        mc:Ignorable="d" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        d:DesignHeight="400" 
+        d:DesignWidth="1200" 
+        SizeToContent="WidthAndHeight">
+    <Grid Margin="10,0,10,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="800*" MinHeight="500"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1200*" MinWidth="600"/>
+        </Grid.ColumnDefinitions>
+
+        <ams:StockChart Name="ParameterExhibition" Margin="6">
+            <ams:StockChart.DataSets>
+                <ams:DataSet Name="ParameterDataSet"
+                             Brush="DarkOliveGreen"
+                             ItemsSource="{Binding Data}"
+                             DateMemberPath="date"
+                             ValueMemberPath="close"
+                             />
+            </ams:StockChart.DataSets>
+
+            <ams:StockChart.Charts>
+                <!--该部分后期隐藏，以不显示Logo-->
+                <ams:Chart Title="股票价格" GridHeight="4*">
+                    <ams:Chart.Graphs>
+                        <ams:Graph GraphType="Line"  DataField="Value"/>
+                    </ams:Chart.Graphs>
+                </ams:Chart>
+                <ams:Chart GridHeight="4*">
+                    <ams:Chart.Graphs>
+                        <ams:Graph GraphType="Line" Brush="DarkOliveGreen" DataField="Value" 
+                                    LineThickness="2" BulletType="Round" 
+                                    />
+                    </ams:Chart.Graphs>
+
+                    <ams:Chart.DateTimeAxis>
+                        <ams:DateTimeAxis ValuesForeground="#90000000" StrokeThickness="0" TickLength="0" 
+                                            />
+                    </ams:Chart.DateTimeAxis>
+
+                    <ams:Chart.LeftValueAxis>
+                        <ams:ValueAxis ValuesForeground="#90000000"
+                                StrokeThickness="0" TickLength="0" />
+                    </ams:Chart.LeftValueAxis>
+
+                    <ams:Chart.Legend>
+                        <ams:Legend
+                            PositiveValueForeground="Red" NegativeValueForeground="Green"
+                            IsDateVisible="True"/>
+                    </ams:Chart.Legend>
+                </ams:Chart>
+            </ams:StockChart.Charts>
+
+            <!--区间选择的Chart-->
+            <ams:StockChart.PeriodSelector>
+                <ams:PeriodSelector CustomPeriodLabelText="自定义间隔:" PresetPeriodLabelText="缩放:" 
+                                Margin="0,5,0,0" BorderBrush="LemonChiffon"
+                                >
+                    <ams:PeriodSelector.PresetPeriods>
+                        <ams:PresetPeriodButton Interval="Day" Quantity="5" ToolTipService.ToolTip="5天" Content="5天" />
+                        <ams:PresetPeriodButton Interval="Day" Quantity="20" ToolTipService.ToolTip="20天" Content="20天" />
+                        <ams:PresetPeriodButton Interval="Month" Quantity="1" ToolTipService.ToolTip="1个月" Content="1月" />
+                        <ams:PresetPeriodButton Interval="Month" Quantity="3" ToolTipService.ToolTip="3个月" Content="3月" />
+                        <ams:PresetPeriodButton Quantity="NaN" ToolTipService.ToolTip="所有数据" Content="最大" />
+                    </ams:PeriodSelector.PresetPeriods>
+                </ams:PeriodSelector>
+            </ams:StockChart.PeriodSelector>
+        </ams:StockChart>
+    </Grid>
+</Window>
