@@ -1,0 +1,451 @@
+\documentclass[t]{beamer}
+\usepackage{CJK}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{color}
+\usepackage{graphicx}
+
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
+
+
+\usetheme{Warsaw}
+\useoutertheme{infolines}
+%\usetheme{Berlin}
+\begin{document}
+
+
+\begin{CJK*}{GBK}{kai}
+%%-------------------------------------------------
+    \title{基于中证500指数的量化交易策略}
+    \author{嘉合基金 ~~量化投资部}
+    %\institute{嘉合基金}
+    \date{2016年6月15日}
+    \frame{\titlepage}
+%%-------------------------------------------------
+\begin{frame}
+\tableofcontents
+\end{frame}
+
+
+%%-------------------------------------------------
+\section{Trend-following strategy - Dual Thrust}
+\begin{frame}\frametitle{双轨策略的概述}
+
+\begin{block}{策略思想}
+以当日开盘价为基础，根据过去若干日的价格序列设定区间的上下轨，当日内价格突破上轨时做多，跌破下轨时做空
+\end{block}
+
+\begin{figure}[H]
+\includegraphics[height=4cm]{DualThrust1}
+\end{figure}
+
+\end{frame}
+
+
+%%-------------------------------------------------
+
+\begin{frame}\frametitle{双轨策略的概述}
+\begin{itemize}
+
+\item 双轨策略是一种\textcolor[rgb]{1,0,0}{日内趋势策略}
+\begin{itemize}
+\item 上下轨为日频数据，开盘即确定
+\item 极端情况有可能出现日内突破上轨随后又跌破下轨(或者相反)
+\item 适合于趋势较为明显的市场，比如商品期货，中证500指数期货等
+\end{itemize}
+
+\item 双轨策略类似于开盘区间突破策略，区别主要在于
+
+\begin{itemize}
+\item 在设定区间的设置上，双轨策略引入了前若干日的价位，使得该区间相对\textcolor[rgb]{1,0,0}{稳定}，可以适用于日间的趋势跟踪
+\item 对于多头和空头的触发条件，双轨策略考虑了\textcolor[rgb]{1,0,0}{非对称}的幅度，做多和做空的区间可以选择不同的周期数或者上下轨的系数
+\end{itemize}
+
+\end{itemize}
+
+\end{frame}
+%%-------------------------------------------------
+
+
+\begin{frame}\frametitle{双轨策略的算法}
+\begin{itemize}
+\item $P_{HH,N},P_{HC,N},P_{LC,N},P_{LL,N}$表示前$N$(不包括当日)的最高价的最高价，收盘价的最高价，收盘价的最低价和最低价的最低价
+\item $k_{s},k_{x}$表示上下轨系数，$N_{s},N_{x}$ 表示上下轨计算宽度时的周期数, $\widehat{P}_{o}$表示当日开盘价。
+
+
+
+\begin{block}{上下轨的计算公式}
+\begin{itemize}
+\item $R_{N} = \max \left( P_{HH,N}-P_{LC,N},P_{HC,N}-P_{LL,N} \right)$
+\item 上轨宽度为$W_{s} = \widehat{P}_{o} + k_{s}R_{N_{s}}$
+
+\item 下轨宽度为$W_{x} = \widehat{P}_{o} - k_{x}R_{N_{x}}$
+
+\end{itemize}
+\end{block}
+
+
+\end{itemize}
+\end{frame}
+%%-------------------------------------------------
+
+
+
+\begin{frame}\frametitle{双轨策略的回测}
+\begin{figure}[H]
+\includegraphics[height=4cm]{DT_1}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics[height=2.5cm]{DT_2}
+\end{figure}
+\end{frame}
+%%-------------------------------------------------
+
+
+
+\begin{frame}\frametitle{双轨策略的回测}
+策略回测基于中证500指数(000905.SH)的5分钟数据, 假设仓位保持为\textcolor[rgb]{1,0,0}{半仓}，手续费为0.1$\%$
+
+
+\begin{block}{回测结果}
+\centering
+\begin{tabular}{|c|c|c|}
+ & 样本内 & 样本外 \\
+ \hline
+时间段 & ~2015.1-2015.12~ & ~2016.1-2016.6~ \\
+累计收益 & ~101.1$\%$~ & ~9.9$\%$~ \\
+夏普比例 & ~3.539~ & ~1.003~ \\
+最大回撤 & ~8.3$\%$~ & ~8.8$\%$~ \\
+交易次数 & ~89~ & ~47~ \\
+胜率& ~55.05$\%$~ & ~27.66$\%$~ \\
+累计收益/最大回撤& ~12.38~ & ~1.125~ \\
+
+\end{tabular}
+\end{block}
+\end{frame}
+%%-------------------------------------------------
+\section{Trend-following strategy - Linear Regression }
+\begin{frame}\frametitle{回归线策略的概述}
+
+
+\begin{block}{策略思想}
+
+对历史数据进行线性回归，根据拟合出的斜率以及预测值与真实值的差进行趋势判断，当判断为上涨趋势时做多，为下跌趋势时做空
+\end{block}
+
+回归线策略是一种\textcolor[rgb]{1,0,0}{日内或日间趋势策略}
+
+\begin{figure}[H]
+\includegraphics[height=4cm]{LR_Line}
+\end{figure}
+
+\end{frame}
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{回归线策略的算法}
+用$P_{t}$表示在$t$时刻的价格，该时刻价格趋势的回归方程为
+\begin{eqnarray}
+{P_{t-N+i}} = \alpha_{t} i + \beta_{t}
+\label{Reg_Main}
+\end{eqnarray}
+公式(\ref{Reg_Main})中$i = 1,2,3...N$, $N$为回归拟合的长度。
+
+\begin{itemize}
+\item 令$\Delta_{t} = P_{t} - \alpha_{t}N - \beta_{t} $, $\Delta_{t-1} = P_{t-1} - \alpha_{t}\left(N-1\right) - \beta_{t} $，分别表示在在$t$和$t-1$时刻价格序列和拟合曲线的偏差
+
+\item 定义规范化斜率$\alpha_{t}^* = \frac{\alpha_{t}}{\beta_{t}}*N_{a}$
+
+\item $\sigma(N_{b},P)$ 表示价格序列$P$周期为$N_{b}$的波动率，此模型中$N_{b} = N$
+\end{itemize}
+
+\end{frame}
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{回归线策略的算法}
+\begin{block}{多空信号}
+
+\begin{itemize}
+\item \textcolor[rgb]{1,0,0}{多开}
+\begin{itemize}
+
+\item 斜率大于阈值$\alpha^*_{t} > \alpha_{m} $
+\item 最近两日价格在拟合曲线两侧$\Delta_{t}>0>\Delta_{t-1}$
+\end{itemize}
+
+\item \textcolor[rgb]{1,0,0}{多平}
+\begin{itemize}
+\item 斜率小于零$\alpha^*_{t} <0 $
+\item 拟合曲线突破布林带上轨 $\Delta_{t} > n \sigma_{t}(N,P)$
+\end{itemize}
+
+\item \textcolor[rgb]{1,0,0}{空开}
+\begin{itemize}
+
+\item 斜率小于阈值$\alpha^*_{t} < \alpha_{m} $
+\item  最近两日价格在拟合曲线两侧$\Delta_{t}<0<\Delta_{t-1}$
+\end{itemize}
+
+\item \textcolor[rgb]{1,0,0}{空平}
+\begin{itemize}
+\item 斜率大于零$\alpha^*_{t} >0 $
+\item 拟合曲线突破布林带下轨 $\Delta_{t} < -n \sigma_{t}(N,P)$
+\end{itemize}
+
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+%%-------------------------------------------------
+
+
+\begin{frame}\frametitle{回归线策略的回测}
+
+\begin{figure}[H]
+\includegraphics[height=4cm]{LR_1}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics[height=2.5cm]{LR_2}
+\end{figure}
+
+
+\end{frame}
+
+%%-------------------------------------------------
+
+\begin{frame}\frametitle{回归线策略的回测}
+策略回测基于中证500指数(000905.SH)的5分钟数据, 假设仓位保持为\textcolor[rgb]{1,0,0}{半仓}，手续费为0.1$\%$
+
+
+\begin{block}{回测结果}
+\centering
+\begin{tabular}{|c|c|c|}
+ & 样本内 & 样本外 \\
+ \hline
+时间段 & ~2015.1-2015.12~ & ~2016.1-2016.6~ \\
+累计收益 & ~40.7$\%$~ & ~1.6$\%$~ \\
+夏普比例 & ~2.12~ & ~-0.011~ \\
+最大回撤 & ~7.4$\%$~ & ~12.7$\%$~ \\
+交易次数 & ~174~ & ~90~ \\
+胜率& ~40.85$\%$~ & ~26.667$\%$~ \\
+累计收益/最大回撤& ~5.48~ & ~0.125~ \\
+
+\end{tabular}
+\end{block}
+
+
+\end{frame}
+%%-------------------------------------------------
+
+\section{Trend-reversal strategy - TD }
+\begin{frame}\frametitle{TD策略的概述}
+\begin{itemize}
+\item TD指标是大型投资基金Tudor 的执行副总裁(Thomas DeMark) 于20世纪80 年代中期为了发现市场走势转折区域而设计的
+\end{itemize}
+
+\begin{block}{策略思想}
+\begin{itemize}
+\item 市场走势
+由买方和卖方共同作用形成，当买方的力量大于卖方时走势表现为上涨，反之为下跌，
+
+\item 买卖双方力量强
+弱的表象是\textcolor[rgb]{1,0,0}{动态}的，当走势上涨一段时间后，买方力量必然面临衰竭，从而市场转为下跌，TD 指标正是
+为发现市场多空转换时点的而设计的指标
+
+\item 根据TD指标的转换信号做出多空操作
+\item TD策略是一种\textcolor[rgb]{1,0,0}{日内或日间的反转策略}
+\end{itemize}
+
+\end{block}
+
+\end{frame}
+
+%%-------------------------------------------------
+
+\begin{frame}\frametitle{TD策略的算法}
+此处介绍经过广发研究报告修正过的TD组合指标策略。
+
+\begin{itemize}
+\item $p^c_{i},p^h_{i},p^l_{i}$为第$i$日的收盘价，最高价和最低价格
+\item $n_{1}$表示买入启动或者卖出启动形态形成时候的价格比较滞后期数
+\item $n_{2}$表示买入启动或者卖出启动形态形成时候的价格关系单向连续个数
+\item $n_{3}$表示模型计数阶段的最终信号发出所需计数值
+\end{itemize}
+
+\begin{eqnarray*}
+\operatorname{\textrm{UD}}_{i} = \begin{cases}
+1 &{p^c_{i}>p^c_{i-n_{1}}}\\
+-1&{p^c_{i}<p^c_{i-n_{1}}}\\
+0&{else}
+\end{cases}
+\end{eqnarray*}
+
+
+
+\end{frame}
+
+
+%%-------------------------------------------------
+
+\begin{frame}\frametitle{TD策略的算法}
+策略的计算步骤为
+\begin{itemize}
+\item 计算$\operatorname{\textrm{UD}}_{i}$, 并对$\operatorname{\textrm{UD}}_{i}$进行累加计算，且当$\operatorname{\textrm{UD}}_{i} \not= \operatorname{\textrm{UD}}_{i-1} $, 停止本次累加
+\item 当$\operatorname{\textrm{UD}}_{i}$的累加计算结果为$n_{2}$时为一个卖出启动的形成，当计算结果为$-n_{2}$时为一个买入启动的形成
+\item 于买入启动后形成的第一个K线开始买入计数，在某一个K线上同时满足以下三个条件，买入计数累加1，当计数累加至$n_{3}$发出买入信号
+\begin{itemize}
+\item 收盘价大于或等于之前第2 根K 线最高价
+\item 最高价大于之前第1根K 线的最高价
+\item 收盘价大于之前第1个计数处的收盘价
+\end{itemize}
+
+
+
+\end{itemize}
+\end{frame}
+
+%%-------------------------------------------------
+
+\begin{frame}\frametitle{TD策略的算法}
+\begin{itemize}
+\item 于卖出启动形成的随后第一个K线位置开始卖出计数，在某一个K线上同时满足以下三个条件，卖出计数累加1，当计数累加至$n_{3}$发出卖出信号
+\begin{itemize}
+\item 收盘价小于或等于之前第2 根K 线最低价
+\item 最低价小于之前第1根K 线的最低价
+\item 收盘价小于之前第1个计数处的收盘价
+\end{itemize}
+
+\item 当形成一组新的买入启动时，取消上一组未最终形成买入信号的买入计数
+
+\item 当形成一组新的卖出启动时，取消上一组未最终形成卖出信号的卖出计数
+
+\end{itemize}
+
+\end{frame}
+
+%%-------------------------------------------------
+
+\begin{frame}\frametitle{TD策略的示例}
+
+\begin{figure}[H]
+\includegraphics[height=4cm]{Fig2016-05-11TD}
+\end{figure}
+
+
+\end{frame}
+
+
+%%-------------------------------------------------
+
+\begin{frame}\frametitle{TD策略的回测}
+
+\begin{figure}[H]
+\includegraphics[height=4cm]{TD_1}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics[height=2.5cm]{TD_2}
+\end{figure}
+\end{frame}
+%%-------------------------------------------------
+
+\begin{frame}\frametitle{TD策略的回测}
+策略回测基于中证500指数(000905.SH)的5分钟数据, 假设仓位保持为\textcolor[rgb]{1,0,0}{半仓}，手续费为0.1$\%$
+
+\begin{block}{回测结果}
+\centering
+\begin{tabular}{|c|c|c|}
+ & 样本内 & 样本外 \\
+ \hline
+时间段 & ~2015.1-2015.12~ & ~2016.1-2016.6~ \\
+累计收益 & ~78.4$\%$~ & ~11.7$\%$~ \\
+夏普比例 & ~2.70~ & ~1.17~ \\
+最大回撤 & ~20.8$\%$~ & ~10.8$\%$~ \\
+交易次数 & ~119~ & ~48~ \\
+胜率& ~45.38$\%$~ & ~52.08$\%$~ \\
+累计收益/最大回撤& ~3.80~ & ~1.08~ \\
+
+\end{tabular}
+\end{block}
+
+
+
+
+\end{frame}
+
+%%-------------------------------------------------
+\section{Conclusion}
+\begin{frame}\frametitle{结论}
+\begin{itemize}
+\item 由于市场波动性的不断降低，趋势性策略(双轨，回归线)在2016年的表现远不及2015年， 而反转策略(TD)表现较好
+\item 未来研究的方向
+
+\begin{itemize}
+\item 如何监控市场波动性(趋势性)的变化，并且在市场的波动性特征发生明显变化时，在\textcolor[rgb]{1,0,0}{趋势与反转策略}之间如何配置
+\item 由于回测数据源为中证500指数，并不是\textcolor[rgb]{1,0,0}{可交易标的}(比如中证500股指期货，二者之间会有基差的影响)。回测的结果与真实交易会存在一定误差
+\item 程序化交易接口的应用与开发(可借鉴开源项目)
+\end{itemize}
+
+
+\end{itemize}
+\end{frame}
+
+%% ------------------------------------------------
+\section{Appendix: Introduction to Pyalgotrade Platform}
+\begin{frame}\frametitle{Pyalgotrade平台简介}
+\begin{itemize}
+\item Pyalgotrade是Python语言编写的基于\textcolor[rgb]{1,0,0}{事件驱动}交易框架的量化交易\textcolor[rgb]{1,0,0}{开源}项目
+\begin{itemize}
+\item 事件驱动框架是指，当某个新的事件被推送到程序中时（如接口推送新的行情，挂单成功，挂单失败），程序立即调用和这个事件相对应的处理函数进行相关的操作，能有效克服数据处理延时的缺点（时间驱动框架下会有这个问题）
+\item  基于Python语言的开源项目，功能较为完善，而且延展性强，方便后续的开发与维护
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%% ------------------------------------------------
+
+\begin{frame}\frametitle{Pyalgotrade平台简介}
+
+\begin{block}{Pyalgotrade与Zipline平台的比较以及需要改进之处}
+\centering
+\begin{tabular}{|c|c|c|c|}
+
+ & Zipline & Pyalgotrade  & \textcolor[rgb]{1,0,0}{Pyalgotrade-改进版}\\
+ \hline
+类型 & 事件驱动 & 事件驱动 & \\
+ \hline
+运算速度 & 慢 & 快 & \\
+ \hline
+数据源 & \tabincell{c}{Yahoo\\Google} & \tabincell{c}{Yahoo\\Google\\Xignite}  & \tabincell{c}{添加wind,\\tushare等国内市场\\数据接口}\\
+ \hline
+讨论社区& 非常活跃 & 一般& \\
+ \hline
+支持包 & Pandas, TA-Lib &TA-Lib& 支持Pandas\\
+ \hline
+适合交易& 仅限美股 & \tabincell{c}{实盘交易\\任何类型的回测\\(可读取csv等格式)} & \tabincell{c}{添加基于wind等\\国内市场的\\实盘交易接口}\\
+
+\end{tabular}
+\end{block}
+
+\end{frame}
+
+%%-------------------------------------------------
+\section{Reference}
+\begin{frame}\frametitle{参考文献}
+\begin{itemize}
+\item Dual Thrust日内策略, 华泰证券，\textbf{魏刚}，2012
+\item 基于修正TD 指标的指数择时研究， 广发证券， \textbf{罗军}， 2010
+\item A股量化择时模型GFTD第二版， 广发证券， \textbf{安宁宁}， 2013
+
+\item pyalgotrade-cn开源项目，
+
+https://github.com/Yam-cn/pyalgotrade-cn， 2015
+\end{itemize}
+
+
+\end{frame}
+
+\end{CJK*}
+\end{document}

@@ -1,0 +1,156 @@
+%% start of file `template-zh.tex'.
+%% Copyright 2006-2013 Xavier Danaux (xdanaux@gmail.com).
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License version 1.3c,
+% available at http://www.latex-project.org/lppl/.
+
+
+\documentclass[11pt,a4paper,roman]{moderncv}   % possible options include font size ('10pt', '11pt' and '12pt'), paper size ('a4paper', 'letterpaper', 'a5paper', 'legalpaper', 'executivepaper' and 'landscape') and font family ('sans' and 'roman')
+
+% moderncv 主题
+\moderncvstyle{classic}                        % 选项参数是 ‘casual’, ‘classic’, ‘oldstyle’ 和 ’banking’
+\moderncvcolor{blue}                          % 选项参数是 ‘blue’ (默认)、‘orange’、‘green’、‘red’、‘purple’ 和 ‘grey’
+%\nopagenumbers{}                             % 消除注释以取消自动页码生成功能
+
+% 字符编码
+%\usepackage[utf8]{inputenc}                   % 替换你正在使用的编码
+%\usepackage{CJKutf8}
+\usepackage[noindent]{ctex}
+%\usepackage[slantfont,boldfont,CJKnumber,CJKtextspaces]{xeCJK}
+%\setCJKmainfont[BoldFont={SimHei}, ItalicFont={KaiTi}]{SimSun}
+%\setCJKsansfont{KaiTi}
+%\setCJKmonofont{STFangsong}
+
+
+% 调整页面出血
+\usepackage[scale=0.85]{geometry}
+\setlength{\hintscolumnwidth}{2.8cm}           % 如果你希望改变日期栏的宽度
+
+%\setlength{\headheight}{-1pt}
+
+% 个人信息
+\name{薛思乔}{\huge, CFA}
+%\title{简历题目 (可选项)}                     % 可选项、如不需要可删除本行
+\address{上海市虹口区物华路118弄2号2402室}{邮编：200086}            % 可选项、如不需要可删除本行
+\phone[mobile]{156~1811~6767}              % 可选项、如不需要可删除本行
+%\phone[fixed]{+2~(345)~678~901}               % 可选项、如不需要可删除本行
+%\phone[fax]{+3~(456)~789~012}                 % 可选项、如不需要可删除本行
+\email{siqiao$\_$xue@163.com}                    % 可选项、如不需要可删除本行
+%\homepage{www.xialongli.com}                  % 可选项、如不需要可删除本行
+%\extrainfo{附加信息 (可选项)}                 % 可选项、如不需要可删除本行
+%\photo[64pt][0.4pt]{picture}                  % ‘64pt’是图片必须压缩至的高度、‘0.4pt‘是图片边框的宽度 (如不需要可调节至0pt)、’picture‘ 是图片文件的名字;可选项、如不需要可删除本行
+%\quote{引言(可选项)}                          % 可选项、如不需要可删除本行
+
+% 显示索引号;仅用于在简历中使用了引言
+%\makeatletter
+%\renewcommand*{\bibliographyitemlabel}{\@biblabel{\arabic{enumiv}}}
+%\makeatother
+
+% 分类索引
+%\usepackage{multibib}
+%\newcites{book,misc}{{Books},{Others}}
+
+%----------------------------------------------------------------------------------
+%            内容
+%----------------------------------------------------------------------------------
+\begin{document}
+%\begin{CJK}{UTF8}{gbsn}%{bsmi}%{bkai}%{gkai}%{gbsn}                       % 详情参阅CJK文件包
+\maketitle
+\vspace*{-15mm}
+
+%\section{毕业论文}
+%\cvitem{题目}{\emph{题目}}
+%\cvitem{导师}{导师}
+%\cvitem{说明}{\small 论文简介}
+
+\section{\textbf{工作经历}}
+%\subsection{专业}
+\cventry{2014.9 -- 今}{基金经理}{嘉合基金管理有限公司}{上海}{}{\emph{\textbf{固定收益部}}
+\begin{itemize}
+\item 担任公募产品嘉合货币(001232，规模80亿，年化回报2.97$\%$，排名205/410)和嘉合磐石(001571，规模1亿，年化回报10.88$\%$，排名7/107) 基金经理
+\item 开发基于C$\#$的分析系统：实时对产品持仓进行风险分析，利率和商品市场波动性跟踪
+\end{itemize}
+\emph{\textbf{量化投资部}}
+\begin{itemize}
+\item 协助管理80亿规模的量化对冲专户，提供Alpha策略与择时策略，2015年化回报平均15$\%$
+\item 搭建基于Python的量化回测框架：适用于多品种多数据源，拓展性强，运算效率高
+\item 研究与开发商品期货的量化择时(分钟频)及不同品种间的套利策略，在CTA产品中使用
+\end{itemize}
+%
+}
+%\vspace{0.05cm}
+\cventry{2013.6 -- 2014.9}{量化分析师}{法国巴黎银行\emph{(BNP Paribas)}}{上海}{}{\emph{\textbf{资金部}}，经理(Associate)
+\begin{itemize}
+\item 参与和支持资金部利率及外汇交易的日常工作：改进产品定价工具, 维护数据库系统
+\item 建立中国区流动性风险模型,管理内部流动性,向管理层和监管机构报告
+\end{itemize}}
+%\vspace{0.05cm}
+\cventry{2011.4 -- 2013.5}{量化分析师}{法国巴黎银行\emph{(BNP Paribas)}}{新加坡$/$香港}{}{\emph{\textbf{固定收益研究与策略部}}，经理(Associate)
+\begin{itemize}
+\item 开发衍生品交易策略：期权的套利策略，基于随机模型相关性的期权与其他资产配置策略，基于一揽子货币的外汇套利策略
+\item 开发和维护基于C++的衍生品(利率互换，外汇期权，信用掉期(CDS)期权，股票期权等)内部定价模型库，参与亚太区衍生品组的日常交易工作
+\item 改进利率与CDS混合期权(hybrid)的定价模型，完善亚太区混合期权交易的风险控制系统
+\end{itemize}
+}
+%\vspace{0.05cm}
+\cventry{2010.7 -- 2010.9}{量化分析师}{德意志银行\emph{(Deutsche Bank)}}{伦敦}{}{\emph{\textbf{全球市场部}}，暑期实习(Summer Analyst)
+\begin{itemize}
+\item 算法交易组：研究与开发欧洲市场暗池(Dark Pool)算法交易策略，撰写报告并参与路演
+\item 衍生品交易组：开发工具监控期权市场的交易机会，协助报价和管理风险头寸等日常工作
+\end{itemize}}
+
+\section{\textbf{教育背景}}
+\cventry{2009.8 - 2011.7}{金融数学硕士}{巴黎综合理工\emph{(\'Ecole Polytechnique)}~数学系}{巴黎}{}{专业：概率与金融(Probabilit\'es et Finance)，负责人El Karoui教授\\ 学位荣誉：优等(Assez Bien), 法国外交部奖优秀学生学金}  % 第3到第6编码可留白
+%\vspace{0.05cm}
+\cventry{2007.9 -- 2009.6}{应用数学硕士}{市立纽约大学\emph{(City University of New York)}~数学系}{纽约}{}{学位荣誉：最优等(Summa Cum Laude)}
+%\vspace{0.05cm}
+\cventry{2003.9 -- 2007.6}{经济学学士}{南京大学~经济学院~金融系}{}{}{}
+
+%\section{职业技能}
+%\cvitemwithcomment{语言 1}{水平}{评价}
+%\cvitemwithcomment{语言 2}{水平}{评价}
+%\cvitemwithcomment{语言 3}{水平}{评价}
+
+%\section{计算机技能}
+%\cvdoubleitem{类别 1}{XXX, YYY, ZZZ}{类别 4}{XXX, YYY, ZZZ}
+%\cvdoubleitem{类别 2}{XXX, YYY, ZZZ}{类别 5}{XXX, YYY, ZZZ}
+%\cvdoubleitem{类别 3}{XXX, YYY, ZZZ}{类别 6}{XXX, YYY, ZZZ}
+
+\section{\textbf{职业技能}}
+%\cvitem{专业执照}{\textbf{CFA}持证人}
+\cvitem{计算机}{\small 熟练掌握C++/C/Python/Matlab, 熟悉Oracle数据库}
+\cvitem{外语}{\small 流利的\textbf{英语}以及\textbf{法语}听说读写能力，英语6级(CET-6), 法语4级(TEF-4)}
+
+%\section{其他 1}
+%\cvlistitem{项目 1}
+%\cvlistitem{项目 2}
+%\cvlistitem{项目 3}
+
+\renewcommand{\listitemsymbol}{-}             % 改变列表符号
+
+%\section{其他 2}
+%\cvlistdoubleitem{项目 1}{项目 4}
+%\cvlistdoubleitem{项目 2}{项目 5\cite{book1}}
+%\cvlistdoubleitem{项目 3}{}
+
+% 来自BibTeX文件但不使用multibib包的出版物
+%\renewcommand*{\bibliographyitemlabel}{\@biblabel{\arabic{enumiv}}}% BibTeX的数字标签
+\nocite{*}
+%\bibliographystyle{plain}
+%\bibliography{publications}                    % 'publications' 是BibTeX文件的文件名
+
+% 来自BibTeX文件并使用multibib包的出版物
+%\section{出版物}
+%\nocitebook{book1,book2}
+%\bibliographystylebook{plain}
+%\bibliographybook{publications}               % 'publications' 是BibTeX文件的文件名
+%\nocitemisc{misc1,misc2,misc3}
+%\bibliographystylemisc{plain}
+%\bibliographymisc{publications}               % 'publications' 是BibTeX文件的文件名
+
+%\clearpage\end{CJK}
+\end{document}
+
+
+%% 文件结尾 `template-zh.tex'.

@@ -1,0 +1,881 @@
+%\documentclass[CCT]{ctexart}
+%\documentclass[CJK]{cctart}
+\documentclass[CCT]{ctexart}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{enumerate}
+\usepackage{algorithm}
+\usepackage{color}
+\usepackage{algpseudocode}
+\usepackage{graphics}
+\usepackage{epsfig}
+
+\renewcommand{\algorithmicrequire}{\textbf{Initialization:}} % Use Input in the format of Algorithm
+\renewcommand{\algorithmicensure}{\textbf{Iteration:}} % Use Output in the format of Algorithm
+
+
+\newtheorem{theorem}{Theorem}
+\input bnp-macro
+\usepackage{geometry}   %设置页边距的宏包
+\newtheorem{proposition}[theorem]{Proposition}
+
+\geometry{left=4cm,right=0.3cm,top=4cm,bottom=2cm}  % 设置 上、左、下、右 页边距
+\usepackage{pgf, tikz}
+
+\begin{document}
+
+\title{LPPL市场泡沫模型}
+
+\author{嘉合基金量化投资部}
+
+%\date{2014.12}
+%\version{2015.4}
+
+\maketitle
+
+
+
+\section{概述}
+LPPL全称为对数周期幂律(Log - Periodic Power Law)，此模型源自于地球物理中地震与材料断裂等临界现象的理论模型，后被物理学家Sornette应用于预测金融市场的泡沫形成与破裂，即研究金融市场的拐点。
+
+LPPL模型描述的现象是基于交易者之间的相互模仿，这些局部相互作用可形成正反馈，从而导致泡沫和反泡沫的产生，因此该模型可用于金融泡沫和反泡沫的建模和预测。金融市场反泡沫表现在价格演化中，即价格演化呈现出对数周期性振荡且振荡周期不断延长。金融泡沫表现为振荡周期不断缩短。
+
+\section{模型拟合}
+
+对于在$[t_{1},t_{2}]$区间内的时间序列$p_{t}$， LPPL模型认为其服从
+
+\begin{equation}
+\ln p_{t}= A + B\left(t_{c} - t \right)^m + C\left(t_{c} - t \right)^m \cos\left[ \om \ln\left(t_{c} - t \right) + \phi \right]
+\label{LPPLMain}
+\end{equation}
+
+$t_{c}$是临界时间（泡沫破裂时间）；$A$ 是指若泡沫持续到临界时间$t_{c}$时，$p_{t}$能达到的价格；$B<0$是指在临界时间前价格是向上的加速过程，$B>0$是指在临界时间前价格是向下的加速过程；$C$ 是围绕指数增长的一个波动幅度量值，量化对数周期震动;$m$ 是幂指数，衡量价格上涨的加速程度；$\om$是泡沫期波动的角频率； $\phi$是周期波动的初相位。
+
+公式(\ref{LPPLMain})第二项$B\left(t_{c} - t \right)^m $幂律项描述了价格的加速来自正向反馈机制, 第三项$C\left(t_{c} - t \right)^m \cos\left[ \om \ln\left(t_{c} - t \right) + \phi \right]$可以看做是对超指数行为的修正
+
+LPPL模型存在两个显著特征
+\begin{itemize}
+\item 对数周期震荡，在线性尺度下，越接近临界时间，振荡频率越快。但是在对数尺度下，振荡频率为常数
+\item 幂律增长，即超指数增长，即价格的增长率不是常数，而是单调递增
+\end{itemize}
+
+关于模型参数的有效约束条件在章节(\ref{LPPL_Conf})中有进一步的讨论。
+
+
+
+\paragraph{模型的拟合}
+经过降维变换，优化问题的参数最终从七个变成了三个，即$\left( t_{c},m,\om \right)$，大大减小了拟合的复杂度。降维和拟合的具体方法见章节(\ref{App_LPPL_Calib})。
+
+拟合过程中有两个值得注意的问题
+\begin{itemize}
+\item 时间序列$t$使用的是整数序列,即$t=1,2,3...$，表示第几个交易日（如果使用日频数据）或者表示第几个分钟（如果使用分钟数据）
+\item 拟合起始时间点的选取对最终结果$t_{c}$ 影响较大，建议选取明显的低点或者高点，作为泡沫或者反泡沫估算的最佳起始点
+\end{itemize}
+
+
+\section{LPPL Confidence 和 Trust 指数}
+\subsection{LPPL Confidence}
+\label{LPPL_Conf}
+\emph{LPPL Confidence}和\emph{LPPL Trust}是\emph{Sornette}于2015年提出的判断泡沫破裂点的新方法。
+
+
+\paragraph{计算方法}
+\emph{LPPL Confidence}是指不同数据长度的窗口下有多少比例是有效的拟合。步骤为：
+
+\begin{enumerate}
+  \item 对于每一个时间点(拟合终点)$t_2$，选取不同长度的时间序列进行模型拟合。不断往前延伸拟合起点$t_1(t_1<t_2)$， 得到若干个时间区间。
+
+
+  \item 对于每一组时间序列进行LPPL模型拟合，拟合出的结果根据\emph{Sornette}提出的表\ref{LPPL Filtering Table}中过滤条件Filtering Condition 1进行过滤。
+
+\fontsize{9}{11}
+\selectfont
+[
+
+表\ref{LPPL Filtering Table}中约束条件的解读
+\begin{itemize}
+\item 对$m$的约束源自于模型推导中hazard rate小于等于1的要求，以及拟合经验。也有算法设置成$0 \le m \le 1$
+\item $\om$的约束条件是确保对数周期的波幅不至于过大或者过小
+\item $t_{c}$的约束条件是指转折点在拟合终点附近，如果$t_{c}$离拟合终点太远则警示意义很小，可以忽略
+\item Damping比率的约束源自对于hazard rate非负的要求
+\item 相对误差项则要求每一点的拟合误差不差过一定程度，比如$5\%$
+\end{itemize}
+
+]
+\fontsize{10}{11}
+\selectfont
+
+
+  \item 统计样本中满足过滤条件的时间窗口占所有时间窗口的比例，即为时间点$t_2$的LPPL Confidence指数。
+
+\end{enumerate}
+
+
+\paragraph{指数含义}
+指数值越大代表时间窗口内有越多的不同长度的价格序列为有效拟合，因此该时间点上泡沫生成的判断可信度越高；
+指数值越小代表时间窗口内有越少的不同长度的价格序列为有效拟合，因此该时间点上泡沫生成的判断可信度也越低。
+
+\subsection{LPPL Trust}
+\emph{LPPL Trust}是为了衡量残差项对于拟合结果的影响。步骤为：
+
+\begin{enumerate}
+    \item 每一个不同长度的时间窗口$[t_1, t_2]$先进行一次拟合，获取该时间窗口下对应的残差序列。然后将残差序列$\e_{t}$重新随机排列并与模型拟合后估计的对应价格序列$\ph_{t}$相加合成一组新的时间序列$p^*_{t}$。
+
+\fontsize{9}{11}
+\selectfont
+[
+
+定义$f(t)$为$t$到$t$的随机映射函数，
+一次resampling可以定义为
+$p^*_{t_{i}}= \ph_{t_{i}}+\e_{f(t_{i})}=\ph_{t_{i}}+\e_{t_{j}}$
+
+]
+\fontsize{10}{11}
+\selectfont
+
+    \item 对新合成的时间序列$p^*_{t}$重新使用LPPL模型拟合，拟合出的结果根据表\ref{LPPL Filtering Table}中的过滤条件Filtering Condition 2进行判断是否为有效拟合。
+    \item 对同一个时间窗口重复reampling100次，统计新的时间序列中有效拟合比例。
+    \item 统计出时间点$t_2$对应的所有时间窗口计算结果的中位数，即为该时间点的LPPL Trust 指数。
+
+\end{enumerate}
+
+\paragraph{指数含义}
+LPPL Trust指数衡量了LPPL理论模型与实际价格序列的相似程度，0代表完全不符合，1代表完全符合；
+通过经验数据来说，一般LPPS Trust指数值大于5\%,表明目前的价格序列不稳定且存在泡沫破灭的可能性。
+
+\begin{table}[H]
+    \begin{tabular}{|c|c|c|c|c|}
+      \hline
+      % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+      Item & Notation & Search Space & Filtering Condition 1 & Filtering Condition 2 \\
+      \hline
+      3 Nonlinear Parameters & $m$ & [0, 2] & [0.01, 1.2] & [0.01, 0.99] \\
+        & $\omega$ & [1, 50] & [2, 25] & [2, 25] \\
+        & $t_c$ & $[t_2,t_2+0.2dt]$ & $[t_2,t_2+0.1dt]$ & $[t_2,t_2+0.1dt]$ \\
+      %Number of Oscillations & $\frac{\omega}{2}ln|\frac{t_c-t_1}{t_2-t_1}|$ & - & $[2.5, +\infty)$ & $[2.5, +\infty)$ \\
+      Damping & $\frac{m|B|}{\omega|C|}$ & - & $[0.8, +\infty)$ & $[1, +\infty)$ \\
+      Relative Error$(\varepsilon)$ & $\frac{p_t-\widehat{p_t}}{\widehat{p_t}}$ & - & [0, 0.05] & [0, 0.2] \\
+      \hline
+    \end{tabular}
+    \caption{LPPL Filtering Table}\label{LPPL Filtering Table}
+\end{table}
+
+
+\section{模型应用}
+
+
+\subsection{LPPL Confidence}
+\label{LPPL_Conf_app}
+本节应用(\ref{LPPL_Conf})所述的基本方法计算不同标的的LPPL Confidence指数
+ \begin{itemize}
+ \item LPPL模型拟合所使用的参数$m$, $\omega$和$t_c$搜索空间为表\ref{LPPL Filtering Table} 中\emph{搜索空间（Search Space）}列中给出的范围; Confidence指数计算所使用的过滤条件对应表\ref{LPPL Filtering Table}中\emph{过滤条件1(Filtering Condition 1)}
+ \item 每一个标的指数序列选取三类时间窗口集合($t_{window}=t_{2}-t_{1}$)分别进行Confidence指数的计算，以进行比较。具体区间分为小区间($t_{window,min}=50, t_{window,max}=100$)，中等区间($t_{window,min}=150, t_{window,max}=250$) 和长区间($t_{window,min}=250, t_{window,max}=500$)三类，时间间隔为5(或者1) 个交易日
+
+ \item 保持其他过滤条件不变的情况下，计算了不同相对误差条件下(分为$\varepsilon<5\%$，$\e<10\%$ 和$\e<20\%$)的Confidence指数
+
+\end{itemize}
+下列各图中，蜡烛线展示的是标的指数在测试区间内的走势，而图中红线则代表了区间内各时间点上Confidence指数值。
+
+
+\subsubsection{上证综指（000001.SH）}
+
+图\ref{Fig_Conf_SSEC_50-100_RE5}-图\ref{Fig_Conf_SSEC_500_RE20}展示了对标的\emph{上证综合指数（000001.SH）}使用(\ref{LPPL_Conf_app})描述的分析方法进行Confidence指数计算的结果。测试数据的时间范围为2014年9月1日至2016年3月1日，数据频率为日频，共计363 个交易日。
+
+图\ref{Fig_Conf_SSEC_50-100_RE5}、\ref{Fig_Conf_SSEC_50-100_RE10}和\ref{Fig_Conf_SSEC_50-100_RE20}分别展示的是短周期窗口下($t_{window,min}=50, t_{window,max}=100$)，时间间隔为1个交易日($\Delta t=1$)，过滤条件\emph {相对误差（Relative Error）}分为三种情况：$\e<5\%$、$\e<10\%$和$\e<20\%$ ， 其他条件对应表\ref{LPPL Filtering Table}中\emph{过滤条件1(Filtering Condition 1)} 。
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_SSEC_100_RE5}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_SSEC_100_RE5}
+    \fi
+    \caption{蜡烛线：上证综指(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年9月1日至2016年3月1日；时间窗口：50-100；过滤条件：$\e<5\%$，其余过滤条件对应表\ref{LPPL Filtering Table}中
+    \emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_SSEC_50-100_RE5}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_SSEC_100_RE10}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_SSEC_100_RE10}
+    \fi
+    \caption{蜡烛线：上证综指(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年9月1日至2016年3月1日；时间窗口：50-100；过滤条件：$\e<10\%$，其余过滤条件对应表\ref{LPPL Filtering Table}中
+    \emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_SSEC_50-100_RE10}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_SSEC_100_RE20}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_SSEC_100_RE20}
+    \fi
+    \caption{蜡烛线：上证综指(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年9月1日至2016年3月1日；时间窗口：50-100；过滤条件：$\e<20\%$，其余过滤条件对应表\ref{LPPL Filtering Table}中
+    \emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_SSEC_50-100_RE20}
+  \end{center}
+\end{figure}
+
+%在拟合时间长度为短时间窗口($t_{window,min}=50, t_{window,max}=100$)的条件下，以\emph{相对误差(Relative Error)}小于5\%的结果为例，LPPL Confidence在该区间内主要发出了三次泡沫破灭的信号：
+%\begin{enumerate}
+%  \item 第一次2014年12月至2015年1月，信号逐渐变强，至2015年1月9日达到峰值0.727。 期间，上证指数自2300点逐步上涨至3400点，随后上证综指出现了近1个半月的小幅震荡的行情，可以认为Confidence指数正确的预测了一次泡沫破灭的时间点；
+%  \item 第二次为2015年4月22日-2015年5月4日，LPPL模型拟合结果多次判断标的指数形成正泡沫，但Confidence信号值较低，符合过滤条件的时间序列占比不高。上证综指5月5日即出现4\%的跌幅，随后两天再次下跌4\%后见底。Confidence 信号正确指示了一次小幅的回落。
+%  \item 第三次为2015年6月10日至6月15日，接连四日Confidence指数生成正泡沫信号，6月15日指数达到峰值为0.4545,当日上证综指即下跌2\%，随后更出现了一波50\%幅度的下跌。
+%\end{enumerate}
+%
+%在该时间窗口下，Confidence接连三次正泡沫信号都正确的预测了标的指数一段单边上涨走势的终止。
+%
+%相较之下，使用\emph{相对误差(Relative Error)}小于10\%和20\%的条件的结果，Confidence指数多了一次在2015年9月初的负泡沫破灭的信号。与之对应，标的指数也与8月27日结束了连续下跌经过了短暂的盘整之后，出现了一波阶段性上涨行情。因此可以认为，这次负泡沫破灭的信号同样是有效的。由此可见，LPPL Confidence指数在时间窗口长度50-100个交易日下生成的泡沫信号有较高的参考价值。
+
+
+
+图\ref{Fig_Conf_SSEC_250_RE5}和\ref{Fig_Conf_SSEC_250_RE20}分别展示的是中等周期窗口($t_{window,min}=150, t_{window,max}=250$) 下，时间间隔为2个交易日($\Delta t=2$)，过滤条件\emph {相对误差（Relative Error）}采用标准：$\e<5\%$和$\e<20\%$ 的结果，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}。
+
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_SSEC_250_RE5}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_SSEC_250_RE5}
+    \fi
+    \caption{蜡烛线：上证综指(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年9月1日至2016年3月1日；时间窗口：150-250；过滤条件：$\e<5\%$，其余过滤条件对应表\ref{LPPL Filtering Table}中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_SSEC_250_RE5}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_SSEC_250_RE20}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_SSEC_250_RE20}
+    \fi
+    \caption{蜡烛线：上证综指(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年9月1日至2016年3月1日；时间窗口：150-250；过滤条件：$\e<20\%$，其余过滤条件对应表\ref{LPPL Filtering Table}中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_SSEC_250_RE20}
+  \end{center}
+\end{figure}
+
+%在拟合时间长度为中等时间窗口长度($t_{window,min}=150, t_{window,max}=250$)的条件下，Confidence指数发出的信号次数较少：
+%\begin{enumerate}
+%  \item 在\emph{相对误差(Relative Error)}小于5\%的过滤条件下，仅有一次信号发生在2014年10月31日至2014年12月12日。与此同时，上证指数仍然保持上涨趋势近20个交易日。
+%  \item 在\emph{相对误差(Relative Error)}小于20\%的过滤条件下，指数在2014年10月31日至2015年2月6日内有明显信号，其中2014年12月30日至2015年1月5日指数达到了1，意味着该时间点向前推150-250个交易日的走势的拟合结果全部符合过滤条件。而上证综指也在1月7日达到阶段性最高点。但随后Confidence指数又在2015年3月19日-4月27日内发出信号，而该时间段内上证指数保持连续上涨的趋势。
+%\end{enumerate}
+%
+%可以看到LPPL Confidence指数在拟合时间长度为中等时间窗口长度的条件下，生成泡沫信号的准确率是相对较低的，也没有探测到2015年6月的泡沫破灭。而模型效果较差的原因可能是由于上证综指单边走势的时间长度一般与测试的时间长度($t_{window,min}=150, t_{window,max}=250$)并不匹配，因此模型在测试时起点并没有选到趋势形成的起点。
+
+图\ref{Fig_Conf_SSEC_500_RE5}和\ref{Fig_Conf_SSEC_500_RE20}分别展示的是长周期窗口($t_{window,min}=250, t_{window,max}=500$) 下，时间间隔为2个交易日($\Delta t=2$)，过滤条件\emph {相对误差（Relative Error）}采用标准：$\e<5\%$和$\e<20\%$ 的结果，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}。
+
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_SSEC_500_RE5}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_SSEC_500_RE5}
+    \fi
+    \caption{蜡烛线：上证综指(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年9月1日至2016年3月1日；时间窗口：250-500；过滤条件：$\e<5\%$，其余过滤条件对应表\ref{LPPL Filtering Table}中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_SSEC_500_RE5}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_SSEC_500_RE20}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_SSEC_500_RE20}
+    \fi
+    \caption{蜡烛线：上证综指(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年9月1日至2016年3月1日；时间窗口：250-500；过滤条件：$\e<20\%$，其余过滤条件对应表\ref{LPPL Filtering Table}中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_SSEC_500_RE20}
+  \end{center}
+\end{figure}
+
+%在较长时间窗口长度（250-500）的条件下：
+%\begin{enumerate}
+%  \item 在\emph{相对误差(Relative Error)}小于5\%的过滤条件下，Confidence指数仅在2015年6 月15日拟合结果中有一组解符合过滤条件，但该组解准确的预测了上证综指单边走势的终止。
+%  \item 在\emph{相对误差(Relative Error)}小于20\%的过滤条件下，Confidence指数多了一组2014年9月30日至10月27日的负泡沫破灭信号，该信号也正确的预测了上证综指阶段性见底。
+%\end{enumerate}
+%
+%自2013年9月起，上证指数呈现震荡下行的态势，并且指数的振荡有日趋缓和的态势，呈现于熊市的反泡沫性，时间长度契合了长时候窗口长度的搜索范围，故LPPL Confidence指数在该时间区间内有较高的准确性。
+
+\paragraph{结果分析}
+从不同情形下Confidence指数计算的结果与上证指数的走势比较，可以看到
+\begin{itemize}
+\item 根据长周期窗口($t_{window,min}=250, t_{window,max}=500$)计算的Confidence指数在2015年6月初有明显异常的正值，能够正确判断指数拐点的形成。其他周期窗口计算的指数除了在2015年6月以外，在2014年12月-2015年1月期间也有明显异常的正值，而且强度比6月份更大，从实际走势来看，2014年12月-2015年1月期间发出的拐点信号是错误的。
+
+    另外短周期窗口下在2015年9月还Confidence指数出现了一定程度的负值，预测市场将反转向上(见图(\ref{Fig_Conf_SSEC_50-100_RE10})和图(\ref{Fig_Conf_SSEC_50-100_RE20})), 后来走上证指数的走势也证明了此类信号的错误。
+
+    从信号的准确率上来说，长周期窗口计算的Confidence 指数效果更好
+\item 过滤条件中相对误差项$\e$对Confidence指数的形态影响不大，改变相对误差项的阈值并不能明显提高Confidence 指数对拐点预测的准确率
+\item 长周期窗口计算的Confidence指数目前并没有发出市场见底反转向上的信号，说明从2015年6月以后至今的下跌不符合指数式下跌并于近期可能反转的形态
+\item 长周期窗口下计算的Confidence指数绝对值低于20\%时，信号的准确率较低。
+\end{itemize}
+
+
+\subsubsection{南华螺纹钢指数（NH0016.NHF）}
+图\ref{Fig_Conf_Steel_100_RE5}至图\ref{Fig_Conf_Steel_250_RE20}展示了对标的\emph{南华螺纹钢指数（NH0016.NHF）}使用(\ref{LPPL_Conf_app})描述的分析方法进行Confidence指数计算的结果，测试数据的时间范围为2014年11月25日至2016年5月24日，数据频率为日频，共计366个交易日。
+
+图\ref{Fig_Conf_Steel_100_RE5}和图\ref{Fig_Conf_Steel_100_RE20}分别展示的是短周期窗口($t_{window,min}=50, t_{window,max}=100$) 下，时间间隔为1个交易日，过滤条件\emph {相对误差（Relative Error）}分为两种情况：$\e<5\%$和$\e<20\%$ 的结果，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}。
+
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Steel_100_RE5}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Steel_100_RE5}
+    \fi
+    \caption{蜡烛线：南华螺纹钢指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年11月25日至2016年5月24日；时间窗口：50-100；过滤条件：$\e<5\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Steel_100_RE5}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Steel_100_RE20}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Steel_100_RE20}
+    \fi
+    \caption{蜡烛线：南华螺纹钢指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年11月25日至2016年5月24日；时间窗口：50-100；过滤条件：$\e<20\%$，其余过滤条件对应表\ref{LPPL Filtering Table}中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Steel_100_RE20}
+  \end{center}
+\end{figure}
+
+
+图\ref{Fig_Conf_Steel_250_RE5}和图\ref{Fig_Conf_Steel_250_RE20}分别展示的是中等周期窗口($t_{window,min}=150, t_{window,max}=250$)下，时间间隔为2个交易日($\Delta t=2$)，过滤条件\emph {相对误差（Relative Error）}采用标准：$\e<5\%$和$\e<20\%$ 的结果，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}。
+
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Steel_250_RE5}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Steel_250_RE5}
+    \fi
+    \caption{蜡烛线：南华螺纹钢指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年11月25日至2016年5月24日；时间窗口：150-250；过滤条件：$\e<5\%$，其余过滤条件对应表\ref{LPPL Filtering Table}中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Steel_250_RE5}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Steel_250_RE20}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Steel_250_RE20}
+    \fi
+    \caption{蜡烛线：南华螺纹钢指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年11月25日至2016年5月24日；时间窗口：150-250；过滤条件：$\e<20\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Steel_250_RE20}
+  \end{center}
+\end{figure}
+
+
+图\ref{Fig_Conf_Steel_500_RE5}和图\ref{Fig_Conf_Steel_500_RE20}分别展示的是长周期窗口($t_{window,min}=250, t_{window,max}=500$)下，时间间隔为2个交易日($\Delta t=2$)，过滤条件\emph {相对误差（Relative Error）}采用标准：$\e<5\%$和$\e<20\%$ 的结果，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}。
+
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Steel_500_RE5}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Steel_500_RE5}
+    \fi
+    \caption{蜡烛线：南华螺纹钢指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年11月25日至2016年5月24日；时间窗口：250-500；过滤条件：$\e<5\%$，其余过滤条件对应表\ref{LPPL Filtering Table}中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Steel_500_RE5}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Steel_500_RE20}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Steel_500_RE20}
+    \fi
+    \caption{蜡烛线：南华螺纹钢指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年11月25日至2016年5月24日；时间窗口：250-500；过滤条件：$\e<20\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Steel_500_RE20}
+  \end{center}
+\end{figure}
+
+%LPPL Confidence应用于南华螺纹钢指数，在拟合所用时间窗口长度为50-100个交易日的条件下，
+%\begin{enumerate}
+%  \item 2015年4月13日至2015年4月21日，模型拟合结果经过滤符合负泡沫的模型，螺纹钢指数4月21日达到最低点，然后小幅反弹10\%。
+%  \item 2015年7月7日至2015年7月17日，模型拟合结果经过滤符合负泡沫的模型，螺纹钢指数7月9 日达到最低点，然后小幅反弹9\%。
+%  \item 2015年11月23日至2015年12月7日，模型拟合结果经过滤符合负泡沫的模型，螺纹钢指数11 月30日达到阶段性最低点，然后自286.28点上涨至503.94点，上涨幅度近75\%。
+%  \item 2016年3月4日至2016年4月26日，\emph{相对误差（Relative Error）}小于20\%的过滤条件下，模型拟合结果经过滤符合正泡沫的模型，标的指数自4月21日达到最高点503.94点，然后一路下挫至今359.83点（2016 年5月30日）。
+%\end{enumerate}
+%而在时间窗口长度为150-250个交易日的条件下，LPPL模型拟合结果符合过滤条件的比率较低，生成的泡沫信号准确率也相对较低。螺纹钢也经历了自2009年7月起的连续下跌，下跌周期较长，而短期价格波动的周期较符合短时间窗口的长度，故短时间窗口效果较好，而中等时间窗口的效果较差。
+
+\paragraph{结果分析}
+通过比较不同情形下Confidence指数计算的结果与南华螺纹钢指数（NH0016.NHF)的走势比较，可以看到：
+\begin{itemize}
+  \item 根据短周期窗口($t_{window,min}=50,t_{window,max}=100$)所计算的Confidence指数在2015年11月末有明显的负值，可以正确判断指数拐点。此外，短周期窗口下在2015年4月和2015年7月初也有明显异常的负值，强度弱于11月份的信号。但从指数的实际走势来看，2015年4月至2015年7月之间发出的拐点信号都是错误的。
+
+      此外，短周期窗口且相对误差项$\e<20\%$条件下在2016年3月至4月底，Confidence指数出现了连续正值信号，指示市场出现正泡沫（见图\ref{Fig_Conf_Doupo_250_RE20}）。而南华螺纹钢指数在4月21日达到最高点后连续下跌。Confidence指数正确判断了该次拐点的形成。
+  \item 中等周期窗口、长周期窗口计算的Confidence指数分别在在2014年11月出现的较小幅度的正值，2015年5月至6月出现的小幅负值被螺纹钢指数的走势证明所发出信号为错误的。
+  \item 过滤条件中相对误差项$\e$在短周期窗口下对生成负信号强度的影响不大，但完全过滤了生成的正泡沫信号。而在中等周期窗口、长周期窗口下，改变相对误差项阈值并没有明显改善Confidence信号对拐点预测的准确率。
+
+  从信号的准确率和指示趋势拐点的成功率来看，短周期窗口，相对误差$\e<20\%$条件下Confidence指数绝对值超过50\%时，计算的指数准确率较高。
+\end{itemize}
+
+\subsubsection{南华豆粕指数（NH0015.NHF）}
+图\ref{Fig_Conf_Doupo_100_RE5}至图\ref{Fig_Conf_Doupo_250_RE20}展示了对标的\emph{南华豆粕指数（NH0015.NHF）}使用LPPL模型拟合所得出的结果，测试数据的时间范围为2014年11月25日至2016 年5月24日，数据频率为日频，共计366个交易日。
+
+图\ref{Fig_Conf_Doupo_100_RE5}和图\ref{Fig_Conf_Doupo_100_RE20}分别展示的是短周期窗口($t_{window,min}=50, t_{window,max}=100$) 下，时间间隔为1个交易日，过滤条件\emph {相对误差（Relative Error）}分为两种情况$\e<5\%$和$\e<20\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}。
+
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Doupo_100_RE5}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Doupo_100_RE5}
+    \fi
+    \caption{蜡烛线：南华豆粕指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年11月25日至2016年5月24日；时间窗口：50-100；过滤条件：$\e<5\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Doupo_100_RE5}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Doupo_100_RE20}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Doupo_100_RE20}
+    \fi
+    \caption{蜡烛线：南华豆粕指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年11月25日至2016年5月24日；时间窗口：50-100；过滤条件：$\e<20\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Doupo_100_RE20}
+  \end{center}
+\end{figure}
+
+
+图\ref{Fig_Conf_Doupo_250_RE5}和图\ref{Fig_Conf_Doupo_250_RE20}分别展示的是中等周期窗口($t_{window,min}=150, t_{window,max}=250$)下，时间间隔为2个交易日($\Delta t=2$)，过滤条件\emph {相对误差（Relative Error）}采用标准：$\e<5\%$和$\e<20\%$ 的结果，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}。
+
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Doupo_250_RE5}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Doupo_250_RE5}
+    \fi
+    \caption{蜡烛线：南华豆粕指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年11月25日至2016年5月24日；时间窗口：150-250；过滤条件：$\e<5\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Doupo_250_RE5}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Doupo_250_RE20}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Doupo_250_RE20}
+    \fi
+    \caption{蜡烛线：南华豆粕指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年11月25日至2016年5月24日；时间窗口：150-250；过滤条件：$\e<20\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Doupo_250_RE20}
+  \end{center}
+\end{figure}
+
+
+图\ref{Fig_Conf_Doupo_500_RE5}和图\ref{Fig_Conf_Doupo_500_RE20}分别展示的是长周期窗口($t_{window,min}=250, t_{window,max}=500$)下，时间间隔为2个交易日($\Delta t=2$)，过滤条件\emph {相对误差（Relative Error）}采用标准：$\e<5\%$ 和$\e<20\%$ 的结果，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}。
+
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Doupo_500_RE5}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Doupo_500_RE5}
+    \fi
+    \caption{蜡烛线：南华豆粕指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年11月25日至2016年5月24日；时间窗口：250-500；过滤条件：$\e<5\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Doupo_500_RE5}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Doupo_500_RE20}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Doupo_500_RE20}
+    \fi
+    \caption{蜡烛线：南华豆粕指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年11月25日至2016年5月24日；时间窗口：250-500；过滤条件：$\e<20\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Doupo_500_RE20}
+  \end{center}
+\end{figure}
+
+
+%LPPL Confidence指数应用于豆粕指数时，可以明显看到50-100个交易日的范围效果最好，在测试区间内发出了4次信号：
+%\begin{enumerate}
+%  \item 第一次2015年1月21日至2015年1月29日，模型拟合结果符合负泡沫走势，南华豆粕指数也从底部1700点上涨至1850点。
+%  \item 第二次2015年5月26日至2015年6月9日，模型拟合结果符合负泡沫走势，南华豆粕指数也从6月17点最低点1582点上涨至最高1836点。
+%  \item 第三次2015年11月11日至2015年11月25日，模型拟合结果符合负泡沫走势，南华豆粕指数11月23日达到最低点，自2016年4月起开始上涨
+%  \item 第四次2016年5月14日至2016年5月24日，模型拟合结果符合正泡沫走势，目前指数仍保持上涨趋势。
+%\end{enumerate}
+%可以看到，\emph{相对误差（Relative Error）}对拟合结果的影响较小，应用的时间窗口长度影响较大。50-100个交易日是较为理想的测试时间窗口，在区间内生成泡沫破灭的信号有较大的准确率。
+
+\paragraph{结果分析}
+通过比较不同情形下Confidence指数计算的结果与南华豆粕指数（NH0015.NHF)的走势，可以看到：
+\begin{itemize}
+  \item 根据短周期窗口($t_{window,min}=50,t_{window,max}=100$)所计算的Confidence指数分别在2015年1月末、2015年5月末和2015年11月中出现了明显异常的负值信号，其中2015年11月中旬出现的信号强度最强，信号绝对值大于50\%。而标的指数相应区间和随后期间的实际走势进行说明仅第三次（2015年11月中旬）的信号指示的止跌回升信号正确。
+
+      另外，短周期窗口下在2016年5月中起至近日（2016年5月24日），Confidence指数出现了连续正值信号(图\ref{Fig_Conf_Doupo_100_RE5}和图\ref{Fig_Conf_Doupo_100_RE20})，其信号的正确性仍有待后续指数走势进行确认。
+
+  \item 中等周期窗口在测试区间内没有任何出现异常值，而长周期窗口计算的Confidence指数在2015年6月末出现的较小幅度的信号(图\ref{Fig_Conf_Doupo_500_RE5})，但该信号指示的反转信号是错误的。
+
+  综上，从信号的准确率来看，短周期窗口下计算的Confidence指数出现异常且指数绝对值超过50\%时准确率较高。
+
+  \item 此外，过滤条件中相对误差项$\e$在短周期窗口下对Confidence指数的形态影响较小，使用不同的相对误差项的阈值并没有显著提高Confidence指数对拐点预测的准确率。
+
+
+\end{itemize}
+
+
+\subsubsection{南华焦煤指数（NH0029.NHF）}
+图\ref{Fig_Conf_Coral_100_RE5}至图\ref{Fig_Conf_Coral_500_RE20}展示了对标的\emph{南华焦煤指数（NH0015.NHF）}使用LPPL模型拟合所得出的结果，
+
+图\ref{Fig_Conf_Coral_100_RE5}至
+图\ref{Fig_Conf_Coral_100_RE20}测试数据的时间范围为2014年11月25日至2016年5月24日，数据频率为日频，共计366个交易日。
+图\ref{Fig_Conf_Coral_250_RE5}至
+图\ref{Fig_Conf_Coral_250_RE20}测试数据的时间范围为2015年9月15日至2016年5月23日，数据频率为日频，共计168个交易日。
+
+图\ref{Fig_Conf_Coral_100_RE5}和图\ref{Fig_Conf_Coral_100_RE20}分别展示的是短周期窗口($t_{window,min}=50, t_{window,max}=100$) 下，时间间隔为1个交易日($\Delta t=1$)，过滤条件\emph {相对误差（Relative Error）}分为两种情况：$\e<5\%$和$\e<20\%$ ，其他条件对应表\ref{LPPL Filtering Table}中\emph{过滤条件1(Filtering Condition 1)} 。
+
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Coral_100_RE5}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Coral_100_RE5}
+    \fi
+    \caption{蜡烛线：南华焦煤指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年11月25日至2016年5月24日；时间窗口：50-100；过滤条件：$\e<5\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Coral_100_RE5}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Coral_100_RE20}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Coral_100_RE20}
+    \fi
+    \caption{蜡烛线：南华焦煤指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2014年11月25日至2016年5月24日；时间窗口：50-100；过滤条件：$\e<20\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Coral_100_RE20}
+  \end{center}
+\end{figure}
+
+
+图\ref{Fig_Conf_Coral_250_RE5}和图\ref{Fig_Conf_Coral_250_RE20}分别展示的是中等周期窗口($t_{window,min}=150, t_{window,max}=250$)下，时间间隔为2个交易日($\Delta t=2$)，过滤条件\emph {相对误差（Relative Error）}采用标准：$\e<5\%$和$\e<20\%$ 的结果，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}。
+
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Coral_250_RE5}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Coral_250_RE5}
+    \fi
+    \caption{蜡烛线：南华焦煤指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2015年9月15日至2016年5月23日；时间窗口：150-250；过滤条件：$\e<5\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Coral_250_RE5}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Coral_250_RE20}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Coral_250_RE20}
+    \fi
+    \caption{蜡烛线：南华焦煤指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2015年9月15日至2016年5月23日；时间窗口：150-250；过滤条件：$\e<20\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Coral_250_RE20}
+  \end{center}
+\end{figure}
+
+图\ref{Fig_Conf_Coral_500_RE5}和图\ref{Fig_Conf_Coral_500_RE20}分别展示的是长周期窗口($t_{window,min}=250, t_{window,max}=500$)下，时间间隔为2个交易日($\Delta t=2$)，过滤条件\emph {相对误差（Relative Error）}采用标准：$\e<5\%$ 和$\e<20\%$ 的结果，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}。
+
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Coral_500_RE5}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Coral_500_RE5}
+    \fi
+    \caption{蜡烛线：南华焦煤指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2015年9月15日至2016年5月23日；时间窗口：150-250；过滤条件：$\e<5\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中\emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Coral_500_RE5}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=3in,width=7.2in]{lppl_Coral_500_RE20}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{lppl_Coral_500_RE20}
+    \fi
+    \caption{蜡烛线：南华焦煤指数(左轴)；红线：LPPL Confidence指数(右轴)；时间范围：2015年9月15日至2016年5月23日；时间窗口：150-250；过滤条件：$\e<20\%$，其余过滤条件对应表\ref{LPPL Filtering Table} 中
+    \emph{过滤条件1(Filtering Condition 1)}}
+    \label{Fig_Conf_Coral_500_RE20}
+  \end{center}
+\end{figure}
+
+%LPPL Confidence指数应用于南华焦煤指数时，
+%\begin{enumerate}
+%  \item 使用过滤条件\emph{相对误差（Relative Error）}小于5\%时，Confidence指数在2016年3 月30日至2016年4月27日发出正泡沫信号，4月27日时指数达到峰值，南华焦煤指数于26日达到最高点，随后经历了20\%的下跌。
+%  \item 使用过滤条件\emph{相对误差（Relative Error）}小于10\%和小于20\%时，Confidence指数在2015年9月中旬至2015年12月发出负泡沫信号，而市场在2014年11月28日达到最低点。信号正确指示了市场的低点。
+%\end{enumerate}
+%焦煤期货的趋势周期较长，故中、长时间窗口长度的拟合结果在一定范围内判断了指数的低点，而近期的上涨又符合短时间窗口的拟合范围，故较准确的指示了近期的单边上涨终结。
+
+\paragraph{结果分析}
+通过比较不同情形下Confidence指数计算的结果与南华焦煤指数（NH0029.NHF)的走势，可以看到：
+\begin{itemize}
+  \item 中等周期窗口下($t_{window,min}=150,t_{window,max}=250$)所计算的Confidence指数在2015年11月初至11月末出现了多次明显的负值信号，指示焦煤指数即将止跌回升，而市场验证了该信号，焦煤指数的拐点在区间内形成。长周期窗口计算的指数在2015年10月底出现了连续正值，从实际走势来看，发出的拐点信号略早于实际拐点。
+
+  \item 短周期窗口下2015年3月末至4月末Confidence指数出现了多次正值信号(图\ref{Fig_Conf_Coral_100_RE5}和图\ref{Fig_Conf_Coral_100_RE20})，预测市场将反转向下。目前焦煤指数仅小幅下跌，信号的正确性仍有待市场验证。
+
+      从信号的准确率来说，目前中等周期窗口下计算的Confidence指数效果最好。
+
+  \item 过滤条件中相对误差项$\e$在各周期窗口下对Confidence指数的形态影响较小，不同的相对误差项的阈值并没有显著提高Confidence指数对拐点预测的准确率。
+\end{itemize}
+
+\subsection{LPPL Trust}
+因所涉计算量较大，故暂未应用。
+
+
+
+\section{结论}
+\subsection{LPPL Confidence指数的应用分析}
+
+
+从(\ref{LPPL_Conf_app})讨论的针对不同标的以及不同过滤条件的LPPL Confidence指数的比较可以得出如下结论
+
+\begin{itemize}
+  \item 上证综指： 使用长周期($t_{window,min}=250,t_{window,max}=500$)进行Confidence指数的计算，信号的正确率较高。使用中短周期窗口进行计算Confidence指数效果较差
+      
+\vspace{0.5cm}
+\fontsize{9}{11}
+\selectfont
+[
+ Confidence指数较好的预测了2015年6月的拐点。对于随后至今的下跌，未发出反转信号（至少说明下跌过程不符合指数式下跌并反转的形态）
+]
+\vspace{0.5cm}
+\fontsize{10}{11}
+\selectfont
+  \item 螺纹钢，豆粕和焦炭期货指数：由于此类标的指数的投机气氛较浓，趋势较为明显且持续周期短，经测试短周期($t_{window,min}=50,t_{window,max}=100$)为效果最佳的Confidence指数计算周期
+      
+\vspace{0.5cm}
+\fontsize{9}{11}
+\selectfont
+[
+  Confidence指数较好预测了螺纹钢指数2015年12月的最低点和2016年5月的最高点，效果最好；对于豆粕指数也有非常类似的预测，但是2016年5月底的高点还有待验证；对于焦煤指数，Confidence指数没有给出最低点反转的信号，但是对于2016年5月的最高点有泡沫反转信号
+]
+\vspace{0.5cm}
+\fontsize{10}{11}
+\selectfont
+
+
+  \item 在放宽的相对误差$\epsilon<20\%$条件下进行有效拟合的判断比原始误差条件$\epsilon<5\%$(其他条件对应表\ref{LPPL Filtering Table} 中
+    \emph{过滤条件1(Filtering Condition 1)})，效果更好
+\end{itemize}
+
+
+
+
+\subsection{后续研究方向}
+下一步的研究方向为继续优化LPPL模型算法，将计算过程中现有使用的穷举法改为\emph{Levenberg-Marquardt}最优化算法，根据含参数的残差平方和函数的梯度及二阶导数近似估计残差平方和函数，从初始解开始不断逼近最优解来减少LPPL 拟合所用的时间，并将\emph{Sornette}提出的LPPL Trust指数应用市场泡沫的判断中去。
+
+
+\section{附录}
+\subsection{LPPL模型的拟合}
+\label{App_LPPL_Calib}
+根据公式(\ref{LPPLMain}),LPPL模型有7个参数需要估计，即$A,B,C, t_{c},m,\om, \phi$; 其中$t_{c},m,\om, \phi$ 为非线性参数，$A,B,C$ 为线性参数。为降低拟合参数的数量，同时为确保参数估计的稳定性，需要首先将线性参数用非线性参数估计值表达出来，从而只需要估计非线性参数即可。有诸多论文提出了拟合方法，此处引用了Sornette于2011年提出的拟合改进方法。 \footnote{见A Stable and Robust Calibration Scheme of LPPL Model, \emph{Vladimir Filimonov, Didier Sornette}, 2011}
+
+
+首先，
+令$y_{t} = \ln p_{t}，C_{1} = C \cos \phi, C_{2} = C\sin\phi , f_{t} = \left(t_{c} - t \right)^m,g_{t} = \left(t_{c} - t \right)^m\cos\left[ \om \ln\left(t_{c} - t \right) \right]$,
+
+$h_{t} = \left(t_{c} - t \right)^m\sin\left[ \om \ln\left(t_{c} - t \right) \right]$, 公式(\ref{LPPLMain}) 可改写成$y_{t} = A + Bf_{t} + C_{1}g_{t}+C_{2}h_{t}$
+
+\vspace{0.5cm}
+\fontsize{9}{11}
+\selectfont
+[
+公式(\ref{LPPLMain})等价于
+\begin{equation*}
+\ln p_{t} = A + B\left(t_{c} - t \right)^m + C\left(t_{c} - t \right)^m \cos\left[ \om \ln\left(t_{c} - t \right)\right] \cos \phi + C\left(t_{c} - t \right)^m \sin\left[ \om \ln\left(t_{c} - t \right)\right]\sin \phi
+\label{LPPLMain2}
+\end{equation*}
+
+令
+\begin{equation*}
+C_{1} = C \cos \phi, C_{2} = C\sin\phi
+\end{equation*}
+
+所以(\ref{LPPLMain})可改写为
+\begin{equation}
+\ln p_{t} = A + B\left(t_{c} - t \right)^m + C_{1}\left(t_{c} - t \right)^m \cos\left[ \om \ln\left(t_{c} - t \right)\right]  + C_{2}\left(t_{c} - t \right)^m \sin\left[ \om \ln\left(t_{c} - t \right)\right]
+\label{LPPLMain3}
+\end{equation}
+]
+\fontsize{10}{11}
+\selectfont
+\vspace{0.5cm}
+
+其次，假设区间内有$N$ 个$p_{t}$取值点, LPPL模型的拟合可以整理为最小化残差和的优化问题
+\begin{equation*}
+\min \limits_{A,B,C_{1},C_{2}, t_{c},m,\om} S\left( A,B,C, t_{c},m,\om \right)= \sum\limits_{i=1}^{N}\left( y_{t_{i}} -A - Bf_{t_{i}} - C_{1}g_{t_{i}}-C_{2}h_{t_{i}} \right)^2
+\end{equation*}
+
+
+再其次，将线性参数$A,B,C_{1},C_{2}$ 用非线性参数$t_{c},m,\om$表达出来, 那么优化问题可以转化为
+\begin{equation*}
+\min \limits_{A,B,C_{1},C_{2}, t_{c},m,\om} S\left( A,B,C, t_{c},m,\om \right) \equiv \min \limits_{t_{c},m,\om} S_{1}\left(  t_{c},m,\om  \right)
+\end{equation*}
+其中
+\begin{equation}
+S_{1}\left(  t_{c},m,\om\right) = \min \limits_{A,B,C_{1},C_{2}} S\left( A,B,C_{1},C_{2}, t_{c},m,\om \right)
+\label{LPPLMain_Opt}
+\end{equation}
+
+
+
+
+
+那么优化问题(\ref{LPPLMain_Opt})等价于
+\begin{equation}
+\{ \Ah, \Bh, \widehat{C}_{1}, \widehat{C}_{2}  \} = \arg \min \limits_{A,B,\widehat{C}_{1}, \widehat{C}_{2} } S\left( A,B,C, t_{c},m,\om \right) = \arg \min \limits_{A,B,\widehat{C}_{1}, \widehat{C}_{2} }\sum\limits_{i=1}^{N}\left(   y_{t_{i}} -A - Bf_{t_{i}} - C_{1}g_{t_{i}}-C_{2}h_{t_{i}} \right)^2
+\label{LPPLMain_Opt2}
+\end{equation}
+
+联立公式(\ref{LPPLMain_Opt2})的一阶条件可以得到关于$\{ \Ah, \Bh, \widehat{C}_{1}, \widehat{C}_{2} \}$ 的方程组，通过LU方法或者Cholesky方法可以得到$\{ \Ah, \Bh, \widehat{C}_{1}, \widehat{C}_{2} \}$ 的解。
+
+
+
+
+\vspace{0.5cm}
+\fontsize{9}{11}
+\selectfont
+[
+
+$\{ \Ah, \Bh, \widehat{C}_{1}, \widehat{C}_{2} \}$应该满足公式(\ref{LPPLMain_Opt2})的一阶条件，联立方程之后可得到如下方程组
+
+\begin{equation}
+ \left(  \begin{array}{c} \sum\limits_{i=1}^{N}y_{t_{i}} \\ \sum\limits_{i=1}^{N}y_{t_{i}}f_{t_{i}}\\ \sum\limits_{i=1}^{N}y_{t_{i}}g_{t_{i}} \\\sum\limits_{i=1}^{N}y_{t_{i}}h_{t_{i}}   \end{array} \right) = \left(  \begin{array}{cccc}  N &\sum\limits_{i=1}^{N}f_{t_{i}} & \sum\limits_{i=1}^{N}g_{t_{i}}&  \sum\limits_{i=1}^{N}h_{t_{i}}  \\ \sum\limits_{i=1}^{N}f_{t_{i}} &\sum\limits_{i=1}^{N}f^2_{t_{i}} & \sum\limits_{i=1}^{N}f_{t_{i}}g_{t_{i}}&\sum\limits_{i=1}^{N}f_{t_{i}}h_{t_{i}} \\ \sum\limits_{i=1}^{N}g_{t_{i}} &\sum\limits_{i=1}^{N}f_{t_{i}} g_{t_{i}}& \sum\limits_{i=1}^{N}g^2_{t_{i}} &\sum\limits_{i=1}^{N}g_{t_{i}}h_{t_{i}} \\
+  \sum\limits_{i=1}^{N}h_{t_{i}} &\sum\limits_{i=1}^{N}f_{t_{i}} h_{t_{i}}& \sum\limits_{i=1}^{N}g_{t_{i}}h_{t_{i}}& \sum\limits_{i=1}^{N}h^2_{t_{i}} \end{array}  \right)      \left(  \begin{array}{c} A \\B\\C_{1} \\C_{2}   \end{array} \right)
+\label{LPPLMain5}
+\end{equation}
+
+%在公式(\ref{LPPLMain3})通过LU分解可以得到$ \left(  \begin{array}{c} A \\B\\C    \end{array} \right)$的解
+令$b=\left(  \begin{array}{c} A \\B\\C_{1}\\C_{2}    \end{array} \right)$,$X=\left(  \begin{array}{cccc}
+1 & f_{t_{1}} &g_{t_{1}}&h_{t_{1}} \\1 & f_{t_{2}} &g_{t_{2}} &h_{t_{2}} \\.&.&.\\.&.&.\\1 & f_{t_{N}} &g_{t_{N}}&h_{t_{N}}
+\end{array}
+ \right)$
+
+ 则公式(\ref{LPPLMain3})可以用矩阵形式表示为$X^{T}y = \left(X^{T}X  \right)b$, 所以可得到$b$的解
+ \begin{equation}
+\bh = \left(X^{T}X  \right)^{-1}X^{T}y
+\label{LPPLMain6}
+\end{equation}
+
+]
+\fontsize{10}{11}
+\selectfont
+\vspace{0.5cm}
+
+
+所以优化问题的参数最终从七个变成了三个，即$\left( t_{c},m,\om \right)$。
+
+参数估计\footnote{也可以用穷举法，效率较低}的方法分成两步
+\begin{itemize}
+\item 使用遍历方法或者禁忌搜索算法(Taboo)\footnote{算法见章节(\ref{App_Tabu})}找出10个局部解
+\item 这10个局部解作为初始值，使用Levenberg-Marquardt非线性最优化算法来拟合曲线，使得$\sum\limits_{i=1}^{N}\left( y_{t{i}} - \hat{y_{t{i}}} \right)^2$ 取得最小值
+\end{itemize}
+
+
+
+\subsection{禁忌(Tabu)搜索算法}
+\label{App_Tabu}
+
+算法的伪代码如下
+\begin{algorithm}[H]
+\caption{禁忌搜索算法}
+
+\begin{algorithmic}[1]
+\Require
+$s = s_{0}$, sBest$ =s$, tabuList = [ ]
+\Ensure
+\While {stoppingCondition() $==$ false}
+\State    candidateList = [ ];
+\State    bestCandidate = null;
+    \For{sCandidate $\in $ sNeighborhood}
+        \If { (not tabuList.contains(sCandidate)) $\&$ (fitness(sCandidate) $>$ fitness(bestCandidate)) }
+        \State bestCandidate = sCandidate
+        \EndIf
+    \EndFor
+    \State s = bestCandidate
+    \If{fitness(bestCandidate) $>$ fitness(sBest)}
+    \State sBest = bestCandidate
+    \EndIf
+\EndWhile\\
+return  sBest;
+\end{algorithmic}
+
+\end{algorithm}
+
+
+
+\section{参考文献}
+
+
+
+股市泡沫反泡沫研究， 国泰君安证券， \emph{刘富兵，蒋瑛琨}， 2012
+
+Everything You Always Wanted to Know about LPPL, \emph{Petr Geraskin}, 2010
+
+A Stable and Robust Calibration Scheme of LPPL Model, \emph{Vladimir Filimonov, Didier Sornette}, 2011
+
+Real-time prediction and post-mortem analysis of the Shanghai 2015 stock market bubble and crash, \emph{Didier Sornette, Guilherme Demos}, 2015.08]
+
+Diagnosing Bubbles in Fixed Income Markets, \emph{Tuncay Michael Irmak, Burgdorf}, 2015.10
+
+
+\end{document}

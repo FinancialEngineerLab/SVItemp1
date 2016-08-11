@@ -1,0 +1,4 @@
+1 - 安装完全版本的MacTex (TexShop + TexLiveUtility + 其他)
+2 - （不知道是否每个用户都需要）在TexLiveUtility中，先更新TexLiveUility自身， 然后再找到fontawesome包进行更新； 或者也可以选择一次性更新所有的包 
+3 - 在TexShop中的偏好设置中，把‘编码’ 换成utf-8
+4 - 打开examples里面的中文简历tex, 要选择用Latex进行编译（网上说要用XeLatex编译，可是总是报错，说找不到FontAwesome，但是用Latex编译反而可以）；
