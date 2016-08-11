@@ -1,0 +1,25 @@
+C:\Users\shenshuqi\Documents\Visual Studio 2010\Projects\ProgressBar\ProgressBar\bin\Release\ProgressBar.exe
+C:\Users\shenshuqi\Documents\Visual Studio 2010\Projects\ProgressBar\ProgressBar\bin\Release\ProgressBar.pdb
+C:\Users\shenshuqi\Documents\Visual Studio 2010\Projects\ProgressBar\ProgressBar\obj\x86\Release\ResolveAssemblyReference.cache
+C:\Users\shenshuqi\Documents\Visual Studio 2010\Projects\ProgressBar\ProgressBar\obj\x86\Release\ProgressBar.Form1.resources
+C:\Users\shenshuqi\Documents\Visual Studio 2010\Projects\ProgressBar\ProgressBar\obj\x86\Release\ProgressBar.Properties.Resources.resources
+C:\Users\shenshuqi\Documents\Visual Studio 2010\Projects\ProgressBar\ProgressBar\obj\x86\Release\GenerateResource.read.1.tlog
+C:\Users\shenshuqi\Documents\Visual Studio 2010\Projects\ProgressBar\ProgressBar\obj\x86\Release\GenerateResource.write.1.tlog
+C:\Users\shenshuqi\Documents\Visual Studio 2010\Projects\ProgressBar\ProgressBar\obj\x86\Release\ProgressBar.exe
+C:\Users\shenshuqi\Documents\Visual Studio 2010\Projects\ProgressBar\ProgressBar\obj\x86\Release\ProgressBar.pdb
+D:\BeiwaitanCodeLib\C#\ProgressBar\ProgressBar\obj\x86\Release\ProgressBar.exe
+D:\BeiwaitanCodeLib\C#\ProgressBar\ProgressBar\obj\x86\Release\ProgressBar.pdb
+D:\Workarea\Beiwaitan\CodeLib\C#\ProgressBar\ProgressBar\obj\x86\Release\ProgressBar.exe
+D:\Workarea\Beiwaitan\CodeLib\C#\ProgressBar\ProgressBar\obj\x86\Release\ProgressBar.pdb
+D:\Workarea\Beiwaitan\CodeLib\C#\ProgressBar\ProgressBar\bin\Release\ProgressBar.exe
+D:\Workarea\Beiwaitan\CodeLib\C#\ProgressBar\ProgressBar\bin\Release\ProgressBar.pdb
+D:\Workarea\Beiwaitan\CodeLib\C#\ProgressBar\ProgressBar\bin\Release\af\ProgressBar.resources.dll
+D:\Workarea\Beiwaitan\CodeLib\C#\ProgressBar\ProgressBar\bin\Release\zh-CN\ProgressBar.resources.dll
+D:\Workarea\Beiwaitan\CodeLib\C#\ProgressBar\ProgressBar\obj\x86\Release\ProgressBar.Form1.resources
+D:\Workarea\Beiwaitan\CodeLib\C#\ProgressBar\ProgressBar\obj\x86\Release\ProgressBar.Properties.Resources.resources
+D:\Workarea\Beiwaitan\CodeLib\C#\ProgressBar\ProgressBar\obj\x86\Release\ProgressBar.Form1.af.resources
+D:\Workarea\Beiwaitan\CodeLib\C#\ProgressBar\ProgressBar\obj\x86\Release\ProgressBar.Form1.zh-CN.resources
+D:\Workarea\Beiwaitan\CodeLib\C#\ProgressBar\ProgressBar\obj\x86\Release\ProgressBar.csproj.GenerateResource.Cache
+D:\Workarea\Beiwaitan\CodeLib\C#\ProgressBar\ProgressBar\obj\x86\Release\af\ProgressBar.resources.dll
+D:\Workarea\Beiwaitan\CodeLib\C#\ProgressBar\ProgressBar\obj\x86\Release\zh-CN\ProgressBar.resources.dll
+D:\Workarea\Beiwaitan\CodeLib\C#\ProgressBar\ProgressBar\obj\x86\Release\ProgressBar.csprojResolveAssemblyReference.cache
