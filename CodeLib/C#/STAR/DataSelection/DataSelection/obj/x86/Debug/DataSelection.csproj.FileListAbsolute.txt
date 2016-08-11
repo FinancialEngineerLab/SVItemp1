@@ -1,0 +1,22 @@
+C:\Users\yangyanzhe\documents\visual studio 2010\Projects\DataSelection\DataSelection\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\yangyanzhe\documents\visual studio 2010\Projects\DataSelection\DataSelection\obj\x86\Debug\DataSelection.csproj.ResolveComReference.cache
+C:\Users\yangyanzhe\documents\visual studio 2010\Projects\DataSelection\DataSelection\obj\x86\Debug\DataSelection.Form1.resources
+C:\Users\yangyanzhe\documents\visual studio 2010\Projects\DataSelection\DataSelection\obj\x86\Debug\DataSelection.Properties.Resources.resources
+C:\Users\yangyanzhe\documents\visual studio 2010\Projects\DataSelection\DataSelection\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\yangyanzhe\documents\visual studio 2010\Projects\DataSelection\DataSelection\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\yangyanzhe\documents\visual studio 2010\Projects\DataSelection\DataSelection\bin\Debug\DataSelection.exe
+C:\Users\yangyanzhe\documents\visual studio 2010\Projects\DataSelection\DataSelection\bin\Debug\DataSelection.pdb
+C:\Users\yangyanzhe\documents\visual studio 2010\Projects\DataSelection\DataSelection\obj\x86\Debug\DataSelection.exe
+C:\Users\yangyanzhe\documents\visual studio 2010\Projects\DataSelection\DataSelection\obj\x86\Debug\DataSelection.pdb
+C:\Users\yangyanzhe\Documents\Visual Studio 2010\Projects\DataSelection\DataSelection\bin\Debug\WAPIWrapperCSharp.dll
+D:\BeiwaitanCodeLib\C#\STAR\DataSelection\DataSelection\obj\x86\Debug\DataSelection.csproj.ResolveComReference.cache
+D:\BeiwaitanCodeLib\C#\STAR\DataSelection\DataSelection\obj\x86\Debug\DataSelection.exe
+D:\BeiwaitanCodeLib\C#\STAR\DataSelection\DataSelection\bin\Debug\DataSelection.exe
+D:\BeiwaitanCodeLib\C#\STAR\DataSelection\DataSelection\bin\Debug\DataSelection.pdb
+D:\BeiwaitanCodeLib\C#\STAR\DataSelection\DataSelection\bin\Debug\WAPIWrapperCSharp.dll
+D:\BeiwaitanCodeLib\C#\STAR\DataSelection\DataSelection\obj\x86\Debug\ResolveAssemblyReference.cache
+D:\BeiwaitanCodeLib\C#\STAR\DataSelection\DataSelection\obj\x86\Debug\DataSelection.Form1.resources
+D:\BeiwaitanCodeLib\C#\STAR\DataSelection\DataSelection\obj\x86\Debug\DataSelection.Properties.Resources.resources
+D:\BeiwaitanCodeLib\C#\STAR\DataSelection\DataSelection\obj\x86\Debug\GenerateResource.read.1.tlog
+D:\BeiwaitanCodeLib\C#\STAR\DataSelection\DataSelection\obj\x86\Debug\GenerateResource.write.1.tlog
+D:\BeiwaitanCodeLib\C#\STAR\DataSelection\DataSelection\obj\x86\Debug\DataSelection.pdb
