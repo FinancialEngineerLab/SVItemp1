@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qldll", "qldll\qldll.vcxproj", "{42BDFCAD-4043-4B46-8CA8-2391CC2272CD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug (static runtime)|Win32 = Debug (static runtime)|Win32
+		Debug (static runtime)|x64 = Debug (static runtime)|x64
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release (static runtime)|Win32 = Release (static runtime)|Win32
+		Release (static runtime)|x64 = Release (static runtime)|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42BDFCAD-4043-4B46-8CA8-2391CC2272CD}.Debug (static runtime)|Win32.ActiveCfg = Debug|Win32
+		{42BDFCAD-4043-4B46-8CA8-2391CC2272CD}.Debug (static runtime)|Win32.Build.0 = Debug|Win32
+		{42BDFCAD-4043-4B46-8CA8-2391CC2272CD}.Debug (static runtime)|x64.ActiveCfg = Debug|Win32
+		{42BDFCAD-4043-4B46-8CA8-2391CC2272CD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{42BDFCAD-4043-4B46-8CA8-2391CC2272CD}.Debug|Win32.Build.0 = Debug|Win32
+		{42BDFCAD-4043-4B46-8CA8-2391CC2272CD}.Debug|x64.ActiveCfg = Debug|Win32
+		{42BDFCAD-4043-4B46-8CA8-2391CC2272CD}.Release (static runtime)|Win32.ActiveCfg = Release|Win32
+		{42BDFCAD-4043-4B46-8CA8-2391CC2272CD}.Release (static runtime)|Win32.Build.0 = Release|Win32
+		{42BDFCAD-4043-4B46-8CA8-2391CC2272CD}.Release (static runtime)|x64.ActiveCfg = Release|Win32
+		{42BDFCAD-4043-4B46-8CA8-2391CC2272CD}.Release|Win32.ActiveCfg = Release|Win32
+		{42BDFCAD-4043-4B46-8CA8-2391CC2272CD}.Release|Win32.Build.0 = Release|Win32
+		{42BDFCAD-4043-4B46-8CA8-2391CC2272CD}.Release|x64.ActiveCfg = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
