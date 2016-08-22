@@ -1,0 +1,434 @@
+# -*- coding: utf-8 -*-
+import matplotlib.gridspec as gridspec
+import matplotlib.pyplot as plt
+
+from tools.date_handler import date_count
+from pyalgotrade.stratanalyzer import returns, sharpe, drawdown, trades
+from tools import qrisk
+from tools.data_handler import dataseries_to_nparray
+from tools.date_handler import date_conversion
+from tools.plot.pyfolio import plotting, timeseries, pos
+import pandas as pd
+
+
+# 返回pyalgo策略对象的数据集
+# strategy 中需要添加 getInfo等函数
+class performanceDataSet():
+    def __init__(self, myStrategy):
+        self.__myStrategy = myStrategy
+        self.__returnsAnalyzer = returns.Returns()
+        self.__sharpeRatioAnalyzer = sharpe.SharpeRatio()
+        self.__drawdownAnalyzer = drawdown.DrawDown()
+        self.__tradeAnalyzer = trades.Trades()
+
+        myStrategy.attachAnalyzer(self.__returnsAnalyzer)
+        myStrategy.attachAnalyzer(self.__sharpeRatioAnalyzer)
+        myStrategy.attachAnalyzer(self.__drawdownAnalyzer)
+        myStrategy.attachAnalyzer(self.__tradeAnalyzer)
+
+    def getPerformanceDefaultData(self):
+        __returns = self.getReturns()  # returns, array
+        __cumulReturns = self.getCumulReturns()  # cumul returns, array
+        __sharpeRatio = self.getSharpeRatio()
+        __maxDrawDown = self.getMaxDrawdown()
+        __tradeInfo = self.getInfo()
+        return {"returns": __returns, "cumulativeReturns": __cumulReturns, "sharpeRatio": __sharpeRatio,
+                "maxDrawdown": __maxDrawDown}
+
+    def getInfo(self):
+        return self.__myStrategy.getInfo()
+
+    def getTimeSeries(self):
+        return self.__myStrategy.getDateTimeSeries()
+
+    def getCumulReturns(self):
+        return dataseries_to_nparray.change_data_series_to_np_array(self.__returnsAnalyzer.getCumulativeReturns(),
+                                                                    time_series=self.getTimeSeries())
+
+    def getReturns(self):
+        return dataseries_to_nparray.change_data_series_to_np_array(self.__returnsAnalyzer.getReturns(),
+                                                                    time_series=self.getTimeSeries())
+
+    def getAnnualReturn(self):
+        firstDateTime = self.getTimeSeries()[0]
+        lastDateTime = self.getTimeSeries()[-1]
+        yearsTraded = date_count.years_traded(firstDateTime, lastDateTime)
+        annualReturn = self.getCumulReturns()[-1, 1] / yearsTraded
+        return annualReturn
+
+    def getCalmarRatio(self):
+        if not self.getMaxDrawdown() == 0.0:
+            return self.getAnnualReturn() / self.getMaxDrawdown()
+        else:
+            return -100000
+
+    def getSharpeRatio(self):
+        return self.__sharpeRatioAnalyzer.getSharpeRatio(riskFreeRate=0.05)
+
+    def getLongestDrawdownDuration(self):
+        return self.__drawdownAnalyzer.getLongestDrawDownDuration()
+
+    def getMaxDrawdown(self):
+        return self.__drawdownAnalyzer.getMaxDrawDown()
+
+    def getCount(self):
+        return self.__tradeAnalyzer.getCount()  # trades numbers, int
+
+    def getProfitableCount(self):
+        return self.__tradeAnalyzer.getProfitableCount()
+
+    def getUnprofitableCount(self):
+        return self.__tradeAnalyzer.getUnprofitableCount()
+
+    def getEvenCount(self):
+        return self.__tradeAnalyzer.getEvenCount()  # zero-profit trades numbers, int
+
+    def getAll(self):  # pandas format, 可使用to_json
+        info = self.getInfo()
+        info = info[['date', 'instrument', 'id']][info['action'] == 3]
+        info['All'] = self.__tradeAnalyzer.getAll()
+        return info  # 每笔交易的盈利和损失, dataframe
+
+    def getProfits(self):
+        all_info = self.getAll()
+        return all_info[all_info['All'] > 0]  # 每笔交易盈利, dataframe
+
+    def getLosses(self):
+        all_info = self.getAll()
+        return all_info[all_info['All'] < 0]
+
+    def getAllReturns(self):
+        info = self.getInfo()
+        returns = self.__tradeAnalyzer.getAllReturns().tolist()
+        length = len(returns)
+        action = []
+        CumulReturns = []
+        All_CumulReturns = self.getCumulReturns()
+        j = 0
+
+        if not info.empty:
+            if (info.index[-1] % 2) != 0:
+                for i in range(0, length):
+                    returns.insert(2 * i, 0)
+                for i in range(0, 2 * length):
+                    actionCode = self.mapToActionCode(info['action'][i])
+                    action.append(actionCode)
+                for i in range(0, len(All_CumulReturns)):
+                    if j < 2 * length and All_CumulReturns[i][0] == info['date'][j]:
+                        j += 1
+                        CumulReturns.append(All_CumulReturns[i][1])
+            else:
+                for i in range(0, length + 1):
+                    returns.insert(2 * i, 0)
+                for i in range(0, 2 * length + 1):
+                    actionCode = self.mapToActionCode(info['action'][i])
+                    action.append(actionCode)
+                for i in range(0, len(All_CumulReturns)):
+
+                    if j < 2 * length + 1 and All_CumulReturns[i][0] == info['date'][j]:
+                        j += 1
+                        CumulReturns.append(All_CumulReturns[i][1])
+
+        info['CumulReturns'] = CumulReturns
+        info['AllReturn'] = returns
+        info['action'] = action
+
+        return info  # 每笔交易回报率, pandas
+
+    def getPositiveReturns(self):
+        allReturn = self.getAllReturns()
+        return allReturn[allReturn["AllReturn"] > 0]  # 每笔交易盈利 dataFrame
+
+    def getNegativeReturns(self):
+        allReturn = self.getAllReturns()
+        return allReturn[allReturn["AllReturn"] < 0]  # 每笔交易盈利 dataFrame
+
+    def getCommisionsForAllTrades(self):
+        return self.__tradeAnalyzer.getCommissionsForAllTrades()  # return a numpy.array with commisions for each trade
+
+    def getCommissionsForProfitableTrades(self):
+        return self.__tradeAnalyzer.getCommissionsForProfitableTrades()
+
+    def getCommissionsForUnprofitableTrades(self):
+        return self.__tradeAnalyzer.getCommissionsForUnprofitableTrades()
+
+    def getCommissionsForEvenTrades(self):
+        return self.__tradeAnalyzer.getCommissionsForEvenTrades()
+
+    def getWinningRatio(self):
+        if self.getCount() > 0:
+            return float(self.getProfitableCount()) / self.getCount() * 100
+        else:
+            return 0
+
+    def mapToActionCode(self, infoCode):
+        if infoCode == 1:
+            return '多开'
+        elif infoCode == 2:
+            return '空平'
+        elif infoCode == 3:
+            return '多平'
+        elif infoCode == 4:
+            return '空开'
+
+    def printPerformaceInfo(self):
+        print "Cumulative return: %.3f" % float(self.getCumulReturns()[-1, 1])
+        print "Annual return: %.3f" % self.getAnnualReturn()
+        print "Sharpe ratio: %.3f" % self.getSharpeRatio()
+        print "Max drawdown: %.3f" % self.getMaxDrawdown()
+        print "Longest drawdown duration: %s" % self.getLongestDrawdownDuration()
+        print "Trade numbers: %.d" % self.getCount()
+        print "the of percentage of Win: %.3f %%" % self.getWinningRatio()
+        # 年化收益除以最大回撤
+        print "Calmar ratio: %.3f" % self.getCalmarRatio()
+        print "All returns: "
+        print self.getAllReturns()
+
+
+    ################################## all data is in pandas series ##################################################################
+
+
+
+    ####################################### Return Tracker #######################################################################
+
+    def convertToDailyReturns(self, returns, force_index_to_dt=True):
+        '''
+        :param returns: higher frequency returns than daily returns(pandas series type)
+        :param force_daily_freq:
+        :return:
+        '''
+        ret = timeseries.aggregate_returns(returns, 'daily')
+        if force_index_to_dt:
+            if type(ret.index[0]) is tuple:
+                ret.index = date_conversion.change_tuple_format_to_datetime(ret.index)
+        return ret
+
+    def getStrategyReturns(self, force_daily_freq=False):
+        returns_pd_series = dataseries_to_nparray.change_data_series_to_pd_series(self.__returnsAnalyzer.getReturns(),
+                                                                                  time_series=self.getTimeSeries())
+        return self.convertToDailyReturns(returns_pd_series) if force_daily_freq else returns_pd_series
+
+
+    def getBenchmarkReturn(self, force_daily_freq=False):
+
+        benchmark_price = dataseries_to_nparray.change_data_series_to_pd_series(self.__myStrategy.getFeed().getDataSeries().getCloseDataSeries(),
+                                                                                time_series=self.getTimeSeries())
+        benchmark_ret = benchmark_price.pct_change()
+        return self.convertToDailyReturns(benchmark_ret) if force_daily_freq else benchmark_ret
+
+
+    def getReturnsTearSheet(self, benchmark_rets=None, live_start_date='2016-01-01', cone_std=(1.0, 1.5, 2.0),
+                            bootstrap=False):
+        """
+        Generate a number of plots for analyzing a strategy's returns.
+        - Fetches benchmarks, then creates the plots on a single figure.
+        - Plots: rolling returns (with cone), rolling beta, rolling sharpe,
+            rolling Fama-French risk factors, drawdowns, underwater plot, monthly
+            and annual return plots, daily similarity plots,
+            and return quantile box plot.
+        - Will also print the start and end dates of the strategy,
+            performance statistics, drawdown periods, and the return range.
+        Parameters
+        ----------
+        """
+
+        returns_pd_series = self.getStrategyReturns(force_daily_freq=True)
+
+        if benchmark_rets is None:
+            benchmark_rets = self.getBenchmarkReturn(force_daily_freq=True)
+            # If the strategy's history is longer than the benchmark's, limit
+            # strategy
+            if returns_pd_series.index[0] < benchmark_rets.index[0]:
+                returns_pd_series = returns_pd_series[returns_pd_series.index > benchmark_rets.index[0]]
+
+        df_cum_rets = qrisk.cum_returns(returns_pd_series, starting_value=1)
+        benchmark_rets.name = 'BenchmarkIndex'
+
+        print("Entire data start date: " + str(df_cum_rets.index[0].strftime('%Y-%m-%d')))
+        print("Entire data end date: " + str(df_cum_rets.index[-1].strftime('%Y-%m-%d')))
+        print('\n')
+
+        if live_start_date is not None:
+            live_start_date = date_conversion.get_utc_timestamp(live_start_date)
+
+        plotting.show_perf_stats(     returns_pd_series, benchmark_rets,
+                                     bootstrap=bootstrap,
+                                     live_start_date=live_start_date,
+                                     split_factor_returns=True)
+
+        vertical_sections = 12
+
+        if live_start_date is not None:
+            vertical_sections += 1
+            # live_start_date = date_conversion.get_utc_timestamp(live_start_date)
+
+        if bootstrap:
+            vertical_sections += 1
+
+        # fig = plt.figure(figsize=(14, vertical_sections * 6))
+        # gs = gridspec.GridSpec(vertical_sections, 3, wspace=0.5, hspace=1)
+        fig = plt.figure(figsize=(14, 4 * 6))
+        gs = gridspec.GridSpec(4, 3, wspace=0.5, hspace=1)
+        ax_rolling_returns = plt.subplot(gs[:2, :])
+        ax_drawdown = plt.subplot(gs[2, :], sharex=ax_rolling_returns)
+        ax_underwater = plt.subplot(gs[3, :], sharex=ax_rolling_returns)
+
+        # fig2 = plt.figure(figsize=(14, vertical_sections * 6))
+        # gs2 = gridspec.GridSpec(vertical_sections - 1, 3, wspace=0.5, hspace=1)
+        fig2 = plt.figure(figsize=(14, 3 * 6))
+        gs2 = gridspec.GridSpec(2, 3, wspace=0.5, hspace=1)    # there exists 2 block, and split the window into 2*3
+        ax_monthly_heatmap = plt.subplot(gs2[0, 0])
+        ax_annual_returns = plt.subplot(gs2[0, 1])
+        ax_monthly_dist = plt.subplot(gs2[0, 2])
+        ax_return_quantiles = plt.subplot(gs2[1, :])
+        # cumul returns
+
+        plotting.plot_rolling_returns(returns_pd_series, factor_returns=benchmark_rets,
+                                          live_start_date=live_start_date, cone_std=cone_std, ax=ax_rolling_returns)
+        ax_rolling_returns.set_title('Cumulative Returns')
+
+        # Drawdowns, frequency = daily
+        plotting.plot_drawdown_periods(returns_pd_series, top=5, ax=ax_drawdown)
+        plotting.plot_drawdown_underwater(returns_pd_series, ax=ax_underwater)
+        plotting.show_worst_drawdown_periods(returns_pd_series)
+        print('\n')
+        plotting.show_return_range(returns_pd_series)
+
+        # monthly/annual returns
+        plotting.plot_monthly_returns_heatmap(returns_pd_series, ax=ax_monthly_heatmap)
+        plotting.plot_annual_returns(returns_pd_series, ax=ax_annual_returns)
+        plotting.plot_monthly_returns_dist(returns_pd_series, ax=ax_monthly_dist)
+
+        # quantile
+        plotting.plot_return_quantiles(returns_pd_series, ax=ax_return_quantiles)
+
+        for ax in fig.axes:
+            plt.setp(ax.get_xticklabels(), visible=True)
+
+        for ax in fig2.axes:
+            plt.setp(ax.get_xticklabels(), visible=True)
+
+        plt.show()
+
+        return
+
+    ########################################## Position Tracker #######################################################################
+    # in pandas series
+    def getPosition(self):
+        '''
+        positions : pd.DataFrame
+        Daily net position values.
+         - Time series of dollar amount invested in each position and cash.
+         - Days where stocks are not held can be represented by 0 or NaN.
+         - Non-working capital is labelled 'cash'
+         - Example:
+            index         'AAPL'         'MSFT'          cash
+            2004-01-09    13939.3800     -14012.9930     711.5585
+            2004-01-12    14492.6300     -14624.8700     27.1821
+            2004-01-13    -13853.2800    13653.6400      -43.6375
+        :return:
+        '''
+        cash = dataseries_to_nparray.change_data_series_to_pd_series(self.__tradeAnalyzer.getPosCash(),time_series=self.getTimeSeries())
+        position = dataseries_to_nparray.change_data_series_to_pd_series(self.__tradeAnalyzer.getPosCommitted(),time_series=self.getTimeSeries())
+        position_table = pd.concat([position, cash], axis = 1)
+        position_table.columns = ['equity', 'cash']
+        return position_table
+
+    def convertToDailyPosition(self, position, force_index_to_dt=True):
+        def getLastPositionAndCash(x):
+            return x[-1]
+
+        grouping = [lambda x: x.year, lambda x: x.month, lambda x: x.day]
+        ret = position.groupby(grouping).apply(getLastPositionAndCash)
+        if force_index_to_dt:
+            if type(ret.index[0]) is tuple:
+                ret.index = date_conversion.change_tuple_format_to_datetime(ret.index)
+        return ret
+
+
+    def getPositionTearSheet(self, returns, positions, gross_lev=None,
+                               show_and_plot_top_pos=2, hide_positions=False,
+                               return_fig=False, sector_mappings=None):
+        """
+        Generate a number of plots for analyzing a
+        strategy's positions and holdings.
+        - Plots: gross leverage, exposures, top positions, and holdings.
+        - Will also print the top positions held.
+        Parameters
+        ----------
+        returns : pd.Series
+            Daily returns of the strategy, noncumulative.
+             - See full explanation in create_full_tear_sheet.
+        positions : pd.DataFrame
+            Daily net position values.
+             - See full explanation in create_full_tear_sheet.
+        gross_lev : pd.Series, optional
+            The leverage of a strategy.
+             - See full explanation in create_full_tear_sheet.
+        show_and_plot_top_pos : int, optional
+            By default, this is 2, and both prints and plots the
+            top 10 positions.
+            If this is 0, it will only plot; if 1, it will only print.
+        hide_positions : bool, optional
+            If True, will not output any symbol names.
+            Overrides show_and_plot_top_pos to 0 to suppress text output.
+        return_fig : boolean, optional
+            If True, returns the figure that was plotted on.
+        set_context : boolean, optional
+            If True, set default plotting style context.
+        sector_mappings : dict or pd.Series, optional
+            Security identifier to sector mapping.
+            Security ids as keys, sectors as values.
+        """
+        if hide_positions:
+            show_and_plot_top_pos = 0
+        vertical_sections = 6 if sector_mappings is not None else 5
+
+        fig = plt.figure(figsize=(14, vertical_sections * 6))
+        gs = gridspec.GridSpec(vertical_sections, 3, wspace=0.5, hspace=0.5)
+        ax_exposures = plt.subplot(gs[0, :])
+        ax_top_positions = plt.subplot(gs[1, :], sharex=ax_exposures)
+        ax_max_median_pos = plt.subplot(gs[2, :], sharex=ax_exposures)
+        ax_holdings = plt.subplot(gs[3, :], sharex=ax_exposures)
+
+        positions_alloc = pos.get_percent_alloc(positions)
+
+        plotting.plot_exposures(returns, positions_alloc, ax=ax_exposures)
+
+        plotting.show_and_plot_top_positions(
+            returns,
+            positions_alloc,
+            show_and_plot=show_and_plot_top_pos,
+            hide_positions=hide_positions,
+            ax=ax_top_positions)
+
+        plotting.plot_max_median_position_concentration(positions,
+                                                        ax=ax_max_median_pos)
+
+        plotting.plot_holdings(returns, positions_alloc, ax=ax_holdings)
+
+        last_pos = 4
+        if gross_lev is not None:
+            ax_gross_leverage = plt.subplot(gs[last_pos, :],
+                                            sharex=ax_exposures)
+            plotting.plot_gross_leverage(returns, gross_lev,
+                                         ax=ax_gross_leverage)
+            last_pos += 1
+
+        if sector_mappings is not None:
+            sector_exposures = pos.get_sector_exposures(positions,
+                                                        sector_mappings)
+            if len(sector_exposures.columns) > 1:
+                sector_alloc = pos.get_percent_alloc(sector_exposures)
+                sector_alloc = sector_alloc.drop('cash', axis='columns')
+                ax_sector_alloc = plt.subplot(gs[last_pos, :],
+                                              sharex=ax_exposures)
+                plotting.plot_sector_allocations(returns, sector_alloc,
+                                                 ax=ax_sector_alloc)
+
+        for ax in fig.axes:
+            plt.setp(ax.get_xticklabels(), visible=True)
+
+        plt.show()
+        if return_fig:
+            return fig

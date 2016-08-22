@@ -1,0 +1,53 @@
+# -*- coding: utf-8 -*-
+
+from pyalgotrade import strategy
+from tools.date_handler import date_conversion
+from pyalgotrade import plotter
+from pyalgotrade.technical import cumret
+from pyalgotrade.broker.backtesting import TradePercentage
+from pyalgotrade.broker.fillstrategy import DefaultStrategy
+import numpy as np
+
+class IndexExcessRetHelper():
+    def __init__(self, ds1, ds2, ds_benchmark, windowSize):
+        # We're going to use datetime aligned versions of the dataseries.
+        self.__ds1, self.__ds2, self.__dsBenchmark = date_conversion.datetime_aligned_3_data_series(ds1, ds2, ds_benchmark)
+        self.__windowSize = windowSize
+        self.__ds1CumRet = cumret.CumulativeReturn(self.__ds1, windowSize=self.__windowSize, calcRetWithinWindow=True)
+        self.__ds2CumRet = cumret.CumulativeReturn(self.__ds2, windowSize=self.__windowSize,calcRetWithinWindow=True)
+        self.__dsBenchmarkCumRet = cumret.CumulativeReturn(self.__dsBenchmark, windowSize=self.__windowSize, calcRetWithinWindow=True)
+        self.__ds1ExcessRet = None
+        self.__ds2ExcessRet = None
+        self.__isDs1ExcessRetHigher = True
+
+    def getDs1ExcessRet(self):
+        return self.__ds1ExcessRet
+
+    def update(self):
+        ds1ExcessRet = self.__ds1CumRet[-1]
+        ds2ExcessRet = self.__ds2CumRet[-1]
+        dsBenchmarkExcessRet = self.__dsBenchmarkCumRet[-1]
+        self.__ds1ExcessRet.append(ds1ExcessRet - dsBenchmarkExcessRet)
+        self.__ds2ExcessRet.append(ds2ExcessRet - dsBenchmarkExcessRet)
+        self.__isDs1ExcessRetHigher = True if self.__ds1ExcessRet[-1] > self.__ds2ExcessRet[-1] else False
+
+
+
+class IndexRotation(strategy.BacktestingStrategy):
+    def __init__(self, feed, instrument1, instrument2, instrumentBenchmark, windowSize):
+        super(IndexRotation, self).__init__(feed)
+        self.__IndexExcessRetHelper = IndexExcessRetHelper(feed[instrument1].getPriceDataSeries(), feed[instrument2].getAdjCloseDataSeries(), windowSize)
+        self.getBroker().setFillStrategy(DefaultStrategy(None))
+        self.getBroker().setCommission(TradePercentage(0.001))
+        self.__i1 = instrument1
+        self.__i2 = instrument2
+        self.__iBenchmark = instrumentBenchmark
+        self.__holdingPeriods = 0
+        self.__posotion = None
+
+    def onBars(self, bars):
+        self.__IndexExcessRetHelper.update()
+        if self.__IndexExcessRetHelper.getDs1ExcessRet() is None:
+            return
+
+        

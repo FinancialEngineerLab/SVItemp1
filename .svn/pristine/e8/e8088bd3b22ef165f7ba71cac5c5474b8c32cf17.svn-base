@@ -1,0 +1,24 @@
+# -*- coding: utf-8 -*-
+import glob
+import unittest
+
+
+def load_test(test_suit, folder_name, file_naming_rule):
+    test_file_strings = glob.glob(folder_name + "/" + file_naming_rule)
+    test_file_strings = [test_file[0:len(test_file) - 3].replace('\\', '.') for test_file in test_file_strings]
+    [test_suit.append(unittest.defaultTestLoader.loadTestsFromName(test_file)) for test_file in test_file_strings]
+
+
+if __name__ == "__main__":
+    test_suites = []
+    load_test(test_suites, 'test_strat', 'test_*.py')
+    load_test(test_suites, 'test_tools_date_handler', 'test_*.py')
+    load_test(test_suites, 'test_tools_math', 'test_*.py')
+    load_test(test_suites, 'test_tools_performance_analyzer', 'test_*.py')
+    load_test(test_suites, 'test_tools_pyfolio', 'test_*.py')
+    load_test(test_suites, 'test_qrisk', 'test_*.py')
+    load_test(test_suites, 'test_tools_data_handler', 'test_*.py')
+    test_suite = unittest.TestSuite(test_suites)
+    # failfast属性： 一旦测试集中有测试案例发生failed或error立即终止整个测试
+    unittest.TextTestRunner(failfast=True).run(test_suite)
+

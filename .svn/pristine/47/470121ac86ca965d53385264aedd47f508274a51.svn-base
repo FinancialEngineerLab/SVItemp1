@@ -1,0 +1,469 @@
+\documentclass[t]{beamer}
+\usepackage{CJK}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{subfigure}
+
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
+
+
+\usetheme{Warsaw}
+\useoutertheme{infolines}
+%\usetheme{Berlin}
+\begin{document}
+
+
+\begin{CJK*}{GBK}{kai}
+%%-------------------------------------------------
+    \title{嘉合基金量化与研究系统介绍}
+    \author{嘉合基金 ~~量化投资部}
+    %\institute{嘉合基金}
+    \date{2016年6月15日}
+    \frame{\titlepage}
+%%-------------------------------------------------
+%\begin{frame}
+%\tableofcontents
+%\end{frame}
+
+%%%-------------------------------------------------
+%\section{Quantitative Analysis System}
+%\begin{frame}\frametitle{Matlab Stone系统}
+%
+%\begin{block}{功能简介}
+%Stone系统是基于Matlab语言开发，用于跟踪市场超额收益、衡量市场情绪的量化分析工具。
+%系统功能如下表主要分为：
+%\begin{itemize}
+%  \item 超额收益跟踪指标
+%    \begin{itemize}
+%      \item 指数跟踪
+%      \item 行业跟踪
+%      \item 风格跟踪
+%      \item 万得主题指数
+%      \item 万得概念指数
+%    \end{itemize}
+%  \item 市场情绪分析指标
+%    \begin{itemize}
+%      \item 行业一致预期
+%      \item 大小盘跟踪
+%      \item Hurst指数
+%      \item LPPL指数
+%    \end{itemize}
+%\end{itemize}
+%\end{block}
+%
+%\end{frame}
+%%%-------------------------------------------------
+%
+%
+%%%-------------------------------------------------
+%\begin{frame}\frametitle{Matlab Stone系统}
+%
+%\begin{figure}[H]
+%  \begin{center}
+%    \leavevmode
+%    \subfigure[]
+%    \ifpdf
+%      \includegraphics[height=1in,width=1.5in]{Stone_1}
+%    \else
+%      \includegraphics[bb = 92 86 545 742, height=6in]{Stone_1}
+%    \fi
+%    \subfigure[]
+%    \ifpdf
+%      \includegraphics[height=1in,width=1.5in]{Stone_2}
+%    \else
+%      \includegraphics[bb = 92 86 545 742, height=6in]{Stone_2}
+%    \fi
+%    \caption{左图为指数跟踪界面，右图为行业跟踪界面}
+%    \label{Stone System}
+%  \end{center}
+%\end{figure}
+%
+%\end{frame}
+%%%-------------------------------------------------
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{量化系统体系}
+\centering
+\fontsize{8}{11}
+\selectfont
+\begin{tabular}{|c|c|c|c|}
+
+ \hline
+ & \textbf{\fontsize{9}{11}{\tabincell{c}{交易与研究\\ 工作}} }& \fontsize{9}{11}{\textbf{系统名称}}  & \fontsize{9}{11}{\textbf{系统简介}}\\
+ \hline
+日常交易 & \tabincell{c}{产品仓位、敞口监控\\ 重仓股数据更新\\ 压力测试} & 超新星 & \tabincell{c}{\textcolor[rgb]{1,0,0}{自行开发}的基于\textcolor[rgb]{1,0,0}{C\#}的产品管\\ 理系统，实时读取产品持仓数据，\\ 供投资经理监控与分析}\\
+ \hline
+日常交易 & \tabincell{c}{重仓股监控 \\ (读取数据库)} & 秦皇岛 & \tabincell{c}{\textcolor[rgb]{1,0,0}{自行开发}的基于\textcolor[rgb]{1,0,0}{Excel}的量化分析\\ 模板库，（经过封装处理）将\\ 结果在Excel中直观呈现给使用者}\\
+ \hline
+日常交易 & 套利监控 & 物华天宝  & \tabincell{c}{\textcolor[rgb]{1,0,0}{自行开发}的基于\textcolor[rgb]{1,0,0}{C\#}的量化 \\ 分析系统，其中设有对套利\\进行实时监控的模块}\\
+ \hline
+Alpha研究& Alpha策略的开发 & 天软& \tabincell{c}{商用软件，配置朝阳永续数据库,\\ 可方便用于事件性策略的开发}\\
+ \hline
+择时研究 & \tabincell{c}{指数择时策略\\ CTA策略开发} & Palaiseau & \tabincell{c}{根据开源的\textcolor[rgb]{1,0,0}{Python}量化交易 \\ 系统\textcolor[rgb]{1,0,0}{自行改进}所得，运算效率高，\\ 系统可拓展性强}\\
+
+
+\end{tabular}
+\selectfont
+\fontsize{7}{11}
+
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{研究与量化系统体系简介}
+\centering
+\fontsize{8}{11}
+\selectfont
+\begin{tabular}{|c|c|c|c|}
+
+ \hline
+ & \textbf{\fontsize{9}{11}{\tabincell{c}{交易与研究\\ 工作}} }& \fontsize{9}{11}{\textbf{系统名称}}  & \fontsize{9}{11}{\textbf{系统简介}}\\
+ \hline
+市场综合分析 & \tabincell{c}{市场风格监控： \\ 自行编制的\\ 市场行业中性 \\ 超额收益跟踪、 \\ 不同周期的\\ 超额收益跟踪} & 物华天宝 & \tabincell{c}{\textcolor[rgb]{1,0,0}{自行开发}的基于\textcolor[rgb]{1,0,0}{C\#}的量化 \\ 分析系统，每日计算\\自行编制的市场风格等指标，\\并保存至内部数据库}\\
+ \hline
+衍生品研究 & \tabincell{c}{ELN产品的定价与对冲} & 阿拉丁 & \tabincell{c}{\textcolor[rgb]{1,0,0}{自行开发}的基于\textcolor[rgb]{1,0,0}{C++}的衍生品\\ 定价库，其可以产生动态链接\\ 库文件，将复杂运算封装后 \\ 在Excel中直接调用，使用者 \\ 可在设计好的模板库(秦皇岛系统)中 \\ 进行定价和其他研究}\\
+ \hline
+
+\end{tabular}
+\selectfont
+\fontsize{8}{11}
+
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\section{SuperNova System}
+\begin{frame}\frametitle{超新星系统(SuperNova)}
+
+\begin{block}{功能介绍}
+超新星系统是我部基于C\#语言\textcolor[rgb]{1,0,0}{自行开发}的\textcolor[rgb]{1,0,0}{持仓管理}系统，用于为投资经理提供实时持仓数据等信息。系统主要功能如下：
+\begin{itemize}
+  \item 获取产品实时净值、仓位、停牌个股、多头、空头市值等详细持仓信息。
+  \item 获取产品重仓股列表，相应个股在各产品中占比情况，及最新涨跌幅等信息。
+  \item 针对极端情况进行压力测试和进行相应的仓位调整计算等功能。
+\end{itemize}
+\end{block}
+
+
+\end{frame}
+%%-------------------------------------------------
+
+
+%%-------------------------------------------------
+\section{SuperNova System}
+\begin{frame}\frametitle{超新星系统(SuperNova)}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=2.3in]{SuperNova1}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{SuperNova1}
+    \fi
+    \caption{超新星系统-持仓数据界面}
+    \label{SuperNova MainInterface}
+  \end{center}
+\end{figure}
+
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\section{SuperNova System}
+\begin{frame}\frametitle{超新星系统(SuperNova System)}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=2.4in]{SuperNova2}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{SuperNova2}
+    \fi
+    \caption{超新星系统-重仓股界面}
+    \label{SuperNova Holdings}
+  \end{center}
+\end{figure}
+
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\section{SuperNova System}
+\begin{frame}\frametitle{超新星系统(SuperNova System)}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=2.4in]{SuperNova3}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{SuperNova3}
+    \fi
+    \caption{超新星系统-压力测试界面}
+    \label{SuperNova Holdings}
+  \end{center}
+\end{figure}
+
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\section{WuHuaTianBao System}
+\begin{frame}\frametitle{物华天宝系统}
+
+\begin{block}{功能介绍}
+物华天宝系统是量化投资部\textcolor[rgb]{1,0,0}{自行开发}的基于C\#/C++的\textcolor[rgb]{1,0,0}{量化分析库}，主要用于涉及大量数据处理分析和策略管理的系统，并具有可视化功能。系统主要功能包括：
+\begin{itemize}
+  \item 进行行业跟踪分析（超额收益、成交信息、基本面等）
+  \item 生成市场日报（行业中性指数走势、超额收益，融资融券信息，大小盘个股超额收益，行业涨跌排名等）
+  \item 策略应用（PEAD业绩快报策略、事件驱动策略）
+  \item 基差套利监控工具
+  \item 板块涨跌幅监控工具（到价提醒功能）
+  \item 宏观市场数据（汇率及大宗商品价格变动监控）
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%-------------------------------------------------
+
+
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{物华天宝系统}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=2.2in]{WuHuaTianBao_1}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{WuHuaTianBao_1}
+    \fi
+    \caption{物华天宝系统-主界面}
+    \label{WuhuaTianbao MainInterface}
+  \end{center}
+\end{figure}
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{物华天宝系统}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=2.5in]{WuHuaTianBao_9}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{WuHuaTianBao_9}
+    \fi
+    \caption{物华天宝系统-汇率利率市场}
+    \label{WuhuaTianbao System}
+  \end{center}
+\end{figure}
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{物华天宝系统}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=2.2in]{WuHuaTianBao_2}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{WuHuaTianBao_2}
+    \fi
+    \caption{物华天宝系统-PEAD策略应用界面}
+    \label{WuhuaTianbao PEAD}
+  \end{center}
+\end{figure}
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{物华天宝系统}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=1.7in]{WuHuaTianBao_3}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{WuHuaTianBao_3}
+    \fi
+    \caption{物华天宝系统-期货基差套利监控界面}
+    \label{WuhuaTianbao Arbitrage}
+  \end{center}
+\end{figure}
+
+\end{frame}
+%%-------------------------------------------------
+
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{物华天宝系统}
+
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[height=2.6in]{WuHuaTianBao_5}
+    \else
+      \includegraphics[bb = 92 86 545 742, height=6in]{WuHuaTianBao_5}
+    \fi
+    \caption{物华天宝系统-行业分析界面}
+    \label{WuhuaTianbao Industry Analysis}
+  \end{center}
+\end{figure}
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\section{Aladdin System}
+\begin{frame}\frametitle{阿拉丁系统(Aladdin)}
+
+\begin{block}{功能介绍}
+阿拉丁系统是我部\textcolor[rgb]{1,0,0}{自行开发}的C++程序库，库中包含了大量\textcolor[rgb]{1,0,0}{金融分析工具}，可以应用于日常工作中的多种情景，如：
+\begin{itemize}
+  \item 货币与汇率计算
+  \item 日期推算
+  \item 数学类函数(几乎所有数学方法都包括在内,如矩阵运算，各种优化方法等)
+  \item 统计函数(绝大部分的统计方法都包括在内)
+  \item 衍生品定价(蒙特卡洛方法，有限差分方法等)
+\end{itemize}
+利用该库生成的XLL插件使用户可以\textcolor[rgb]{1,0,0}{在Excel中}使用， 从而对衍生品定价、现金流计算和计量等功能加以实现。
+\end{block}
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{阿拉丁系统(Aladdin)}
+
+\begin{block}{阿拉丁系统的优势}
+\begin{itemize}
+  \item 阿拉丁采用了C++语言作为开发语言。相对于一般高级语言，C++的处理运行速度\textcolor[rgb]{1,0,0}{更快}
+  \item 阿拉丁系统是一个低对象依赖的模型\textit{（Clean Object Model）}，库函数可以通过工具很方便的转换为C\#、Java、Perl、Python、R等其他语言，甚至可以通过生成Excel插件在Excel界面中使用库中函数
+  \item 利用C++语言面向对象设计模式的特点，阿拉丁系统具有较好的拓展性，方便后续的开发和维护
+  \item 阿拉丁系统中完成了大量基础的金融或计算模块如：市场惯例、收益率曲线模型、偏微分方程、蒙特卡洛模拟、波动率计算等，这些现成函数可以用作基础，将极大地节约开发新策略编写代码的工作量
+  
+\end{itemize}
+\end{block}
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\section{QinHuangDao System}
+\begin{frame}\frametitle{秦皇岛系统}
+
+\begin{block}{功能介绍}
+秦皇岛系统是一款应用于Excel界面上进行量化分析计算、产品管理的工具。该系统的定价计算主要依托于Aladdin系统，功能主要分为五大类：
+\begin{itemize}
+  \item 组合管理
+  \item 宏观市场
+  \item 板块和个股分析
+  \item 衍生品定价
+  \item 量化策略
+\end{itemize}
+\end{block}
+
+\begin{figure}[H]
+\includegraphics[height=2.3cm]{Qinhuangdao}
+%\caption{秦皇岛系统加载于Excel界面}
+\end{figure}
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{秦皇岛系统-组合管理}
+
+\begin{block}{功能介绍}
+组合管理主要包括：证券组合管理、期货保证金管理、重仓股查询、基金收益敏感性分析功能。
+\end{block}
+
+\begin{figure}[H]
+\includegraphics[height=4.5cm]{Qinhuangdao_4}
+\caption{秦皇岛系统-基金收益敏感性分析}
+\end{figure}
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{秦皇岛系统-宏观市场}
+
+\begin{block}{功能介绍}
+宏观市场主要包括：市场指数、经济数据、分级基金收益监控、分级基金历史数据、MySQL数据管理功能。
+\end{block}
+
+\begin{figure}[H]
+\includegraphics[height=4.5cm]{Qinhuangdao_1}
+\caption{秦皇岛系统-分级基金收益监控}
+\end{figure}
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{秦皇岛系统-板块和个股分析}
+
+\begin{block}{功能介绍}
+板块和个股分析主要包括：公司公告抓取、大小盘相对指数、大小盘跟踪系统、股票筛选、股票下单计算功能。
+\end{block}
+
+\begin{figure}[H]
+\includegraphics[height=4.5cm]{Qinhuangdao_3}
+\caption{秦皇岛系统-公司公告抓取}
+\end{figure}
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{秦皇岛系统-衍生品定价}
+
+\begin{block}{功能介绍}
+衍生品定价主要包括：ETF期权、股指期货、双边敲出期权定价功能。
+\end{block}
+
+\begin{figure}[H]
+\includegraphics[height=4.5cm]{Qinhuangdao_2}
+\caption{秦皇岛系统-双边敲出期权定价}
+\end{figure}
+
+\end{frame}
+%%-------------------------------------------------
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{秦皇岛系统-量化策略}
+
+\begin{block}{功能介绍}
+量化策略主要包括：双轨策略、高送转预测、信息事件策略功能。
+\end{block}
+
+\begin{figure}[H]
+\includegraphics[height=4.5cm]{Qinhuangdao_DT}
+\caption{秦皇岛系统-双轨策略}
+\end{figure}
+
+\end{frame}
+%%-------------------------------------------------
+
+\end{CJK*}
+\end{document}

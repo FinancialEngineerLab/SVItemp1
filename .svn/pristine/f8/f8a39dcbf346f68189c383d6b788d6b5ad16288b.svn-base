@@ -1,0 +1,116 @@
+\documentclass[11pt,a4paper,sans]{moderncv}   % 
+
+% moderncv 主题
+\moderncvstyle{classic}                        % 选项参数是 ‘casual’, ‘classic’, ‘oldstyle’ 和 ’banking’
+\moderncvcolor{blue}                          % 
+%\nopagenumbers{}                             % 消除注释以取消自动页码生成功能
+
+% 字符编码
+\usepackage[utf8]{inputenc}                   % 替换你正在使用的编码
+\usepackage{CJKutf8}
+
+% 调整页面
+\usepackage[scale=0.89]{geometry}
+%\setlength{\hintscolumnwidth}{3cm}           % 如果你希望改变日期栏的宽度
+
+% 个人信息
+\firstname{\qquad梁晓雷}
+\familyname{}
+\title{}                     % 可选项、如不需要可删除本行
+\address{湖北武汉--中国地质大学(武汉)--东区8号楼}{邮编：430074}
+\phone[mobile]{+86 18986135762}              % 可选项、如不需要可删除本行
+\email{18986135762@163.com}                    % 可选项、如不需要可删除本行
+\homepage{blog.csdn.net/rainloving}                  % 可选项、如不需要可删除本行
+%----------------------------------------------------------------------------------
+%            内容
+%----------------------------------------------------------------------------------
+\begin{document}
+\begin{CJK}{UTF8}{gbsn}                       % 详情参阅CJK文件包
+\maketitle
+ 
+\section{教育背景}
+\cventry{2013--至今}{硕士（保研）}{中国地质大学（武汉）计算机学院}{计算机科学与技术}{}{}  % 第3到第6编码可留白
+\cventry{2009--2013}{本科}{中国地质大学（武汉）计算机学院}{网络工程}{}{}
+
+\section{求职意向}
+\cventry{期望职位}{研发工程师}{}{}{}{}
+
+\section{技能}
+\cventry{IT技能}{能熟练运用C/C++、Python语言}{}{}{}{}
+\cventry{}{熟悉基础的数据结构、算法、网络编程}{}{}{}{}
+\cventry{}{了解Linux开发平台、SQL、java、html、javascript}{}{}{}{}
+\cventry{}{有软件结构设计和需求分析的能力}{}{}{}{}
+\cventry{}{能深入理解面向对象的思想，并能熟练地应用于具体的软件设计开发工作中}{}{}{}{}{}
+\cventry{英语}{CET-6}{}{}{}{}
+\cventry{GitHub}{\href{https://github.com/wutongjie23hao}{https://github.com/wutongjie23hao}}{}{}{}{}
+
+\section{出版物}
+\cventry{2014.6}{\textbf{Liang X}\textnormal{,Zeng S, High-gain wide-band dual-circular-polarised antenna design using dynamic constrained multi-objective evolutionary algorithm[J].International Journal of Innovative Computing and Applications, 2014, 6(1): 25-32}}{}{}{}{}
+
+\cventry{2013.4}{\textnormal{Chen, J., Li, M., Zeng, S., }\textbf{Liang, X.}\textnormal{,Zhang, Y. (2013). A new meandering RFID antenna designed by evolutionary algorithm. Computational Intelligence for Communication Systems and Networks (CIComms), 2013 IEEE Symposium on (Vol.5, pp.5 - 9). IEEE.}}{}{}{}{}
+
+\section{项目经历}
+\subsection{研究项目}
+\renewcommand{\baselinestretch}{1.2}
+
+\cventry{2014-至今}
+{演化天线设计软件平台的设计和实现}
+{Python,并行计算,操作系统}
+{研究项目/国家自然基金项目}{}
+{本项目开发一个软件平台，集成天线模型模块和演化算法模块，搭建演化天线优化设计平台，使用户在指定要使用的演化算法和天线模型后，平台自动地用指定的演化算法对指定的天线模型进行优化。我主要负责FEKO软件（电磁仿真软件）接口、RFID天线模型模版的代码实现和维护、框架代码的优化重构。}
+\vspace*{0.2\baselineskip}
+
+\cventry{2013-2014}
+{利用动态约束多目标演化算法设计高增益宽频带双极化天线}
+{python,分布式并行计算,云计算}
+{研究项目/国家自然基金项目}{}
+{本项目利用动态约束多目标演化算法（一种优化算法）对一款高增益高频双极化天线进行了设计和优化。天线建模模块以及部分算法模块的代码实现。该\textbf{\href{http://www.inderscienceonline.com/doi/abs/10.1504/IJICA.2014.064217?journalCode=ijica}{研究成果}}已发表在International Journal of Innovative Computing and Applications期刊上。}
+\vspace*{0.2\baselineskip}
+
+\cventry{2012-2013}
+{用演化算法对折线形状的RFID天线进行设计}
+{Linux,C++,分布式并行计算}
+{研究项目/国家自然基金项目}{}
+{本项目用差分演化算法（一种优化算法）对一种折线形状的RFID天线进行了优化设计，使天线性能得到提高。其中我主要负责天线建模部分的代码实现。}
+\vspace*{0.2\baselineskip}
+
+\subsection{独立项目}
+\cventry{2014}
+{土木实验室信息管理系统}
+{python,PySide,SQLite}
+{独立项目/开源项目}{}
+{本项目目的是编写一款软件，实现对土木实验室的实验仪器进行可视化管理，涉及仪器信息和仪器故障信息的数据统计、展示，并可导出excel格式的数据报表。由我和工程学院的一名同学完成，其中，我主要负责软件的代码实现(Source Code available on Github)。}
+\vspace*{0.2\baselineskip}
+
+\cventry{2014}
+{个人文档管理系统}
+{C++,Qt,SQLite}
+{独立项目/开源项目}{}
+{本项目实现了一个软件平台，包括两个管理系统：论文管理系统、文献管理系统，使个人研究论文与相关的参考文献一目了然。由我和工程学院的一名同学完成，其中，我主要负责软件平台的代码实现(Source Code available on Github)。}
+\vspace*{0.2\baselineskip}
+
+\section{奖项}
+\cventry{2012}{国家奖学金}{}{}{}{}
+\cventry{2013}{优秀毕业班集体}{}{}{}{}
+
+\section{校内经历}
+\cventry{2011-2013}{中国地质大学(武汉)193091班 班长}{}{}{}{}
+
+\section{个人兴趣}
+\cvitem{音乐}{\small 技术之余，会听音乐放松}
+\cvitem{读书}{\small 技术类、文学类和经济类书籍}
+\cvitem{新技术}{\small 喜欢了解科技动态}
+\cvitem{运动}{\small 篮球}
+
+\section{个人评价}
+\cvlistitem{性格开朗，与人和善，有合作精神}
+\cvlistitem{有发现问题、分析问题、解决问题的能力}
+\cvlistitem{能坚持不懈地去做一件事}
+
+\renewcommand{\baselinestretch}{1.0} 
+ 
+\closesection{}                   % needed to renewcommands 
+\renewcommand{\listitemsymbol}{-} % change the symbol for lists 
+\clearpage\end{CJK} 
+\end{document} 
+%% 文件结尾 `template-zh.tex'.

@@ -1,0 +1,4 @@
+;Tinysoft configure file
+[zyyx]
+ConnectStr=Database=gogoal;User_Name=suntime;Password=admin#123;Server=10.200.200.14;DriverID=MSSQL
+permit=local

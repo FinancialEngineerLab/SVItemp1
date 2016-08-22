@@ -1,0 +1,309 @@
+\documentclass[t]{beamer}
+\usepackage{CJK}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{multirow}
+
+\hypersetup{CJKbookmarks=true}
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
+
+
+\usetheme{Warsaw}
+\useoutertheme{infolines}
+%\usetheme{Berlin}
+\begin{document}
+
+
+\begin{CJK*}{GBK}{kai}
+%%-------------------------------------------------
+    \title{基于指数的量化择时策略}
+    \author{嘉合基金 ~~量化投资部}
+    %\institute{嘉合基金}
+    \date{2016年7月25日}
+    \frame{\titlepage}
+%%-------------------------------------------------
+\begin{frame}
+\tableofcontents
+\end{frame}
+
+%%-------------------------------------------------
+\section{概述}
+
+\begin{frame}\frametitle{概述}
+
+\begin{block}{择时策略汇总}
+\centering
+\fontsize{8}{10}
+\selectfont
+\renewcommand\arraystretch{1.2}
+\begin{tabular}{|c|c|c|c|c|c|}
+
+\multirow{2}{*}{择时功能} & \multirow{2}{*}{标的指数} & \multirow{2}{*}{策略模型} & 数据\vspace{-0.05cm} & 信号\vspace{-0.05cm} & \multirow{2}{*}{策略特点} \\
+                          &      &          &                  频率          &               频率            &\\
+ \hline
+\multirow{6}{*}{指数择时} &  \multirow{3}{*}{沪深300} & \multirow{3}{*}{波动率滤波} & \multirow{3}{*}{日频} & \multirow{3}{*}{中等} & 基于统计学习的策略，从波动率\\
+                          &                           &                             &                        & &中挖掘市场\textcolor[rgb]{1,0,0}{趋势}信息进行择时,\\
+                          &                            &                            &                         & &与传统策略相关性小\\
+\cline{2-6}
+ & \multirow{3}{*}{中证500} & \multirow{3}{*}{T指标} & \multirow{3}{*}{日频} & \multirow{3}{*}{中等} & 兼顾动量与反转的策略,\\
+ &                           &                         &                      &                        &无论市场\textcolor[rgb]{1,0,0}{趋势性强弱}均能获取\\
+ &                            &                         &                      &                        & 稳定收益\\
+ \hline
+\multirow{4}{*}{期货交易} & \multirow{2}{*}{中证500} & \multirow{2}{*}{T指标} & \multirow{2}{*}{5分钟} & \multirow{2}{*}{较高} & 同上，另外在分钟频率上策略\\
+                          &         &        &       &      &胜率更高，对市场变化反应灵敏\\
+ \cline{2-6}
+
+ & \multirow{2}{*}{中证500} & \multirow{2}{*}{轨道 突破} & 5分钟\vspace{-0.1cm} & \multirow{2}{*}{较高} & 动量策略，在\textcolor[rgb]{1,0,0}{趋势性强}的\\
+ &                          &                            & 和日频 &      &市场环境中收益极高 \\
+
+ \hline
+\multirow{2}{*}{风格择时} & \multirow{2}{*}{中证100和500} &超额收益\vspace{-0.1cm} & \multirow{2}{*}{日频} & \multirow{2}{*}{较低} & \\
+ &  & 均线 &  &  & \\
+
+\end{tabular}
+
+\end{block}
+
+\end{frame}
+
+%%-------------------------------------------------
+\section{指数择时策略}
+
+\begin{frame}\frametitle{双轨策略的概述}
+
+\begin{block}{策略思想}
+以当日开盘价为基础，根据过去若干日的价格序列设定区间的上下轨，当日内价格突破上轨时做多，跌破下轨时做空
+\end{block}
+
+\begin{figure}[H]
+\includegraphics[height=4cm]{DualThrust1}
+\end{figure}
+
+\end{frame}
+
+
+
+%%-------------------------------------------------
+
+\begin{frame}\frametitle{双轨策略的概述}
+\begin{itemize}
+
+\item 双轨策略是一种\textcolor[rgb]{1,0,0}{日内趋势策略}
+\begin{itemize}
+\item 上下轨为日频数据，开盘即确定
+\item 极端情况有可能出现日内突破上轨随后又跌破下轨(或者相反)
+\item 适合于趋势较为明显的市场，比如商品期货，中证500指数期货等
+\end{itemize}
+
+\item 双轨策略类似于开盘区间突破策略，区别主要在于
+
+\begin{itemize}
+\item 在设定区间的设置上，双轨策略引入了前若干日的价位，使得该区间相对\textcolor[rgb]{1,0,0}{稳定}，可以适用于日间的趋势跟踪
+\item 对于多头和空头的触发条件，双轨策略考虑了\textcolor[rgb]{1,0,0}{非对称}的幅度，做多和做空的区间可以选择不同的周期数或者上下轨的系数
+\end{itemize}
+
+\end{itemize}
+
+\end{frame}
+
+%%-------------------------------------------------
+
+
+
+
+
+\subsection{基于5分钟频率的指数交易策略}
+\begin{frame}\frametitle{双轨策略的回测~- 基于5分钟频率的指数交易策略}
+策略回测基于中证500指数(000905.SH)的\textcolor[rgb]{1,0,0}{5分钟}数据, 假设仓位保持为\textcolor[rgb]{1,0,0}{半仓}，手续费为0.1$\%$
+
+
+\begin{block}{回测结果}
+\centering
+\begin{tabular}{|c|c|c|}
+ & 样本内 & 样本外 \\
+ \hline
+时间段 & ~2015.1-2015.12~ & ~2016.1-2016.6~ \\
+累计收益 & ~101.1$\%$~ & ~9.9$\%$~ \\
+夏普比例 & ~3.539~ & ~1.003~ \\
+最大回撤 & ~8.3$\%$~ & ~8.8$\%$~ \\
+交易次数 & ~89~ & ~47~ \\
+胜率& ~55.05$\%$~ & ~27.66$\%$~ \\
+累计收益/最大回撤& ~12.38~ & ~1.125~ \\
+
+\end{tabular}
+\end{block}
+\end{frame}
+%%-------------------------------------------------
+
+
+\begin{frame}\frametitle{双轨策略的回测~- 基于5分钟频率的指数交易策略}
+\begin{figure}[H]
+\includegraphics[height=4cm]{DT_1}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics[height=2.5cm]{DT_2}
+\end{figure}
+\end{frame}
+%%-------------------------------------------------
+
+
+
+
+%%-------------------------------------------------
+
+\section{期货交易策略 }
+
+\begin{frame}\frametitle{TD策略的概述}
+\begin{itemize}
+\item TD指标是大型投资基金Tudor 的执行副总裁(Thomas DeMark) 于20世纪80 年代中期为了发现市场走势转折区域而设计的
+\end{itemize}
+
+\begin{block}{策略思想}
+\begin{itemize}
+\item 市场走势
+由买方和卖方共同作用形成，当买方的力量大于卖方时走势表现为上涨，反之为下跌，
+
+\item 买卖双方力量强
+弱的表象是\textcolor[rgb]{1,0,0}{动态}的，当走势上涨一段时间后，买方力量必然面临衰竭，从而市场转为下跌，TD 指标正是
+为发现市场多空转换时点的而设计的指标
+
+\item 根据TD指标的转换信号做出多空操作
+\item TD策略是一种\textcolor[rgb]{1,0,0}{日内或日间的反转策略}
+\end{itemize}
+
+\end{block}
+
+\end{frame}
+
+%%-------------------------------------------------
+
+\begin{frame}\frametitle{TD策略的概述}
+
+该策略依赖于对满足形态条件的k线图计数，分成启动计数阶段和信号计数阶段
+\begin{itemize}
+\item 用当时时刻的收盘价与前若干日的收盘价进行比较，大于则记为1，小于则记为-1, 累计计数;累计到阈值时，启动阶段形成
+\item 启动阶段形成后，根据历史时刻的收盘价，最高价和最低价进行计数，累计到阈值时发出信号
+\end{itemize}
+
+
+
+
+\begin{figure}[H]
+\includegraphics[height=4cm]{Fig2016-05-11TD}
+\end{figure}
+
+
+\end{frame}
+
+
+
+%%-------------------------------------------------
+\subsection{基于5分钟频率的指数交易策略}
+%%-------------------------------------------------
+
+\begin{frame}\frametitle{TD策略的回测- 基于5分钟频率的指数交易策略}
+
+\begin{figure}[H]
+\includegraphics[height=4cm]{TD_1}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics[height=2.5cm]{TD_2}
+\end{figure}
+\end{frame}
+%%-------------------------------------------------
+
+\begin{frame}\frametitle{TD策略的回测 ~- 基于5分钟频率的指数交易策略}
+策略回测基于中证500指数(000905.SH)的\textcolor[rgb]{1,0,0}{5分钟}数据, 假设仓位保持为\textcolor[rgb]{1,0,0}{半仓}，手续费为0.1$\%$
+
+\begin{block}{回测结果}
+\centering
+\begin{tabular}{|c|c|c|}
+ & 样本内 & 样本外 \\
+ \hline
+时间段 & ~2015.1-2015.12~ & ~2016.1-2016.6~ \\
+累计收益 & ~78.4$\%$~ & ~11.7$\%$~ \\
+夏普比例 & ~2.70~ & ~1.17~ \\
+最大回撤 & ~20.8$\%$~ & ~10.8$\%$~ \\
+交易次数 & ~119~ & ~48~ \\
+胜率& ~45.38$\%$~ & ~52.08$\%$~ \\
+累计收益/最大回撤& ~3.80~ & ~1.08~ \\
+
+\end{tabular}
+\end{block}
+
+
+
+
+\end{frame}
+%%-------------------------------------------------
+\subsection{基于日频率的指数择时策略}
+
+%%-------------------------------------------------
+\begin{frame}\frametitle{TD策略的回测- 基于日频率的指数择时策略}
+
+\begin{figure}[H]
+\includegraphics[height=4cm]{TD_3}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics[height=2.5cm]{TD_4}
+\end{figure}
+\end{frame}
+%%-------------------------------------------------
+\begin{frame}\frametitle{TD策略的回测 ~- 基于日频率的指数择时策略}
+策略回测基于中证500指数(000905.SH)的\textcolor[rgb]{1,0,0}{日频}数据, 假设仓位保持为\textcolor[rgb]{1,0,0}{满仓}，手续费为0.1$\%$
+
+\begin{block}{回测结果}
+\centering
+\begin{tabular}{|c|c|c|}
+ & 样本内 & 样本外 \\
+ \hline
+时间段 & ~2013.1-2015.12~ & ~2016.1-2016.7~ \\
+累计收益 & ~$152.6\%$~ & ~2.8$\%$~ \\
+夏普比例 & ~1.073~ & ~0.11~ \\
+最大回撤 & ~37.2$\%$~ & ~17.8$\%$~ \\
+交易次数 & ~19~ & ~4~ \\
+胜率& ~42.10$\%$~ & ~25.0$\%$~ \\
+累计收益/最大回撤& ~1.37~ & ~0.15~ \\
+
+\end{tabular}
+\end{block}
+
+
+
+
+\end{frame}
+%%-------------------------------------------------
+
+
+\section{风格择时策略}
+\begin{frame}\frametitle{结论}
+\begin{itemize}
+\item 由于市场波动性的不断降低，趋势性策略(双轨)在2016年的表现远不及2015年， 而反转策略(TD)表现较好
+\item 未来研究的方向
+
+\begin{itemize}
+\item 如何监控市场波动性(趋势性)的变化，并且在市场的波动性特征发生明显变化时，在\textcolor[rgb]{1,0,0}{趋势与反转策略}之间如何配置
+\item 由于回测数据源为中证500指数，并不是\textcolor[rgb]{1,0,0}{可交易标的}(比如中证500股指期货，二者之间会有基差的影响)。回测的结果与真实交易会存在一定误差
+\item 程序化交易接口的应用与开发(可借鉴开源项目)
+\end{itemize}
+
+
+\end{itemize}
+\end{frame}
+
+
+
+%% ------------------------------------------------
+
+
+
+
+
+\end{CJK*}
+
+\newpage
+\end{document}
